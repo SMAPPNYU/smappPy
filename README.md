@@ -1,8 +1,8 @@
 # `smappPy`
 
-*Python package and tools for Twitter data analysis*
+*Python package and tools for Twitter data analysis. Contact: SMaPP Lab, NYU.*
 
-# Basic notes on functionality
+# Introduction
 
 Tweetstream is a Python "package" (a module of modules - basically, a structured collection of code) that addresses common tasks for programming with Tweets and analyzing Twitter data.
 
@@ -102,15 +102,10 @@ friends, followers, etc)
 These topics come from programming lectures given to SMaPP students. See [Programmer Group](https://github.com/SMAPPNYU/ProgrammerGroup) for the full code.
 
 1. Plot the number of tweets per minute with co-occuring words "Obama" and "Syria"
-
 2. Get a collection of tweets (from DB or twitter), output CSV representation of all tweets with added indicator variables (eg: IsRetweet? HasImage?)
-
 3. Get a collection of tweets, go over all and compute aggregate statistics (eg: number of tweets, tweets/user, number of tweeters, tweets per day)
-
 4. Access DataScienceToolkit services, measure sentiment of tweet. Compute aggregate sentiment (basic measure) of tweets per topic.
-
 5. Plot sentiment-per-day of tweets on a certain topic (again, basic sentiment analysis)
-
 6. Collect streaming, real-time tweets by keywords, users, or geolocations - EG, collect all tweets coming from Kyiv (very specific location). Plot them on a map via OpenHeatMap
-
 7. Create "networks" from tweets - user retweet network, tweet-retweet network, etc
+
