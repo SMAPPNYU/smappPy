@@ -1,10 +1,8 @@
-`smappPy`
-=======
+# `smappPy`
 
 *Python package and tools for Twitter data analysis*
 
-Basic notes on functionality
-============================
+# Basic notes on functionality
 
 Tweetstream is a Python "package" (a module of modules - basically, a structured collection of code) that addresses common tasks for programming with Tweets and analyzing Twitter data.
 
@@ -18,14 +16,11 @@ This includes:
 
 The package is a WIP. Existing and future functionality is defined below. Examples of how to use library functions to complete common tasks are also coming.
 
+# Functionality
 
-Functionality
-==================
+## Getting tweets from Twitter
 
-Getting tweets
---------------
-
-smappPy.get_tweets:
+### smappPy.get_tweets:
     
     keyword_tweets(oauth_file, keyword_list, limit_per_keyword)
 
@@ -38,8 +33,7 @@ These methods query twitter via the REST interface (single-transaction. NOT STRE
 
 Also, for many users/keywords/locations and many tweets, these methods WILL hit twitter rate limits. The code will wait for rate limits to reset by itself, but it may take a while.
 
-
-smappPy.streaming:
+### smappPy.streaming:
 
     stream_listener.SimpleFileListener  - captures live tweets, stores in txt file
 
@@ -47,22 +41,18 @@ smappPy.streaming:
 
 Can capture "live" tweets based on keyword, user tweeting, and location. (This is a more complex and detailed system than fetching from the REST API. See the code for more.)
 
-
-Getting user data
------------------
+## Getting user data
 
 Can capture Twitter user data (including account info, picture, tweet numbers,
 friends, followers, etc)
 
-smappPy.user_data:
+### smappPy.user_data:
 
-    get_user_data(oauth_file, userid_list, limit_per_keyword)
+    get_user_data(oauth_file, userid_list)
 
+## Utilities for getting tweets
 
-Utilities for getting tweets
-----------------------------
-
-smappPy.utilities
+### smappPy.utilities
 
     read_tweets_from_file(tweet_file)   - returns a list of tweet objects (json/dict)
 
@@ -72,11 +62,9 @@ smappPy.utilities
 
     store_tweets_in_db(server, port, user, password, database, collection, tweets)
 
+## Checking out your tweets
 
-Checking out your tweets
-------------------------
-
-smappPy.retweet
+### smappPy.retweet
 
     is_retweet(tweet)
     is_official_retweet(tweet)
@@ -85,12 +73,12 @@ smappPy.retweet
     get_user_retweeted(tweet)
     split_manual_retweet(tweet) - returns the "before and after" text of a manual RT
 
-smappPy.mention
+### smappPy.mention
 
     contains_mention(tweet)
     get_users_mentioned(tweet)  - returns a list of users mentioned in the tweet
 
-smappPy.tweet_image
+### smappPy.tweet_image
 
     contains_image(tweet)
     get_image_url(tweet)
@@ -98,40 +86,31 @@ smappPy.tweet_image
 
 .. etc ..
 
+## Analysis (more fun)
 
-Analysis (more fun)
--------------------
-
-smappPy.networks
+### smappPy.networks
 
     build_retweet_network(tweets, internal_only?)
     display_retweet_network(network, outfile?, )
 
     export_network(outfile?)    - exports a network to Gephi format (for prettyness)
 
-smappPy.topics  - IN PROGRESS
+### smappPy.topics  - IN PROGRESS
 
+# Examples of what we can do...
 
-Examples of what we can do...
-=============================
+These topics come from programming lectures given to SMaPP students. See [Programmer Group](https://github.com/SMAPPNYU/ProgrammerGroup) for the full code.
 
-These topics come from the programming lectures of last term - we've all seen the code
+1. Plot the number of tweets per minute with co-occuring words "Obama" and "Syria"
 
-1   Plot the number of tweets per minute with co-occuring words "Obama" and "Syria"
+2. Get a collection of tweets (from DB or twitter), output CSV representation of all tweets with added indicator variables (eg: IsRetweet? HasImage?)
 
-2   Get a collection of tweets (from DB or twitter), output CSV representation of all
-    tweets with added indicator variables (eg: IsRetweet? HasImage?)
+3. Get a collection of tweets, go over all and compute aggregate statistics (eg: number of tweets, tweets/user, number of tweeters, tweets per day)
 
-3   Get a collection of tweets, go over all and compute aggregate statistics (eg: number
-    of tweets, tweets/user, number of tweeters, tweets per day)
+4. Access DataScienceToolkit services, measure sentiment of tweet. Compute aggregate sentiment (basic measure) of tweets per topic.
 
-4   Access DataScienceToolkit services, measure sentiment of tweet. Compute aggregate
-    sentiment (basic measure) of tweets per topic.
+5. Plot sentiment-per-day of tweets on a certain topic (again, basic sentiment analysis)
 
-5   Plot sentiment-per-day of tweets on a certain topic (again, basic sentiment analysis)
+6. Collect streaming, real-time tweets by keywords, users, or geolocations - EG, collect all tweets coming from Kyiv (very specific location). Plot them on a map via OpenHeatMap
 
-6   Collect streaming, real-time tweets by keywords, users, or geolocations - EG, collect
-    all tweets coming from Kyiv (very specific location). Plot them on a map via 
-    OpenHeatMap
-
-7   Create "networks" from tweets - user retweet network, tweet-retweet network, etc
+7. Create "networks" from tweets - user retweet network, tweet-retweet network, etc
