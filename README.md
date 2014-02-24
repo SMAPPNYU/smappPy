@@ -3,7 +3,7 @@
 
 *Python package and tools for Twitter data analysis*
 
-Basic notes on functionality
+Introduction
 ============================
 
 Tweetstream is a Python "package" (a module of modules - basically, a structured collection of code) that addresses common tasks for programming with Tweets and analyzing Twitter data.
