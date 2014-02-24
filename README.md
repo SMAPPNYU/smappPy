@@ -2,13 +2,13 @@
 
 *Python package and tools for Twitter data analysis. Contact: SMaPP Lab, NYU.*
 
-Tweetstream is a Python "package" (a module of modules - basically, a structured collection of code) that addresses common tasks for programming with Tweets and analyzing Twitter data.
+smappPy is a Python "package" (a module of modules - basically, a structured collection of code) that addresses common tasks for programming with Tweets and analyzing Twitter data.
 
 This includes:
     
 1. interfacing with Twitter to find tweets and user data (based on user, keyword, and/or location)
 2. accessing tweets and other twitter data stored in MongoDB databases
-3. getting information about those tweets (contains links/mentions/hashtags/etc, is a retweet, contains location information or not, etc)
+3. getting information about tweets (contains links/mentions/hashtags/etc, is a retweet, contains location information or not, etc)
 4. mining tweet collections for interesting features (most popular hashtags, links shared, images tweeted, etc)
 5. doing advanced computations on tweet collections, such as modeling topics or building retweet networks
 
