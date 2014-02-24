@@ -1,7 +1,7 @@
 `smappPy`
 =======
 
-*Python package and tools for Twitter data analysis*
+*Python package and tools for Twitter data analysis. Contact: SMaPP Lab, NYU.*
 
 Introduction
 ============================
