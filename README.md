@@ -7,34 +7,47 @@ smappPy is a Python "package" (a module of modules - basically, a structured col
 This includes:
     
 1. interfacing with Twitter to find tweets and user data (based on user, keyword, and/or location)
-2. accessing tweets and other twitter data stored in MongoDB databases
+2. accessing tweets and other twitter data stored in files or MongoDB databases
 3. getting information about tweets (contains links/mentions/hashtags/etc, is a retweet, contains location information or not, etc)
-4. mining tweet collections for interesting features (most popular hashtags, links shared, images tweeted, etc)
+4. mining tweet collections for interesting features (popular hashtags, links shared, images tweeted, etc)
 5. doing advanced computations on tweet collections, such as modeling topics or building networks
 
-The package is a WIP. Existing and future functionality is defined below. Examples of how to use library functions to complete common tasks are also coming.
+The package is a WIP (eg: eventually, we will include facebook tools). Existing and future functionality is defined below. Examples of how to use library functions to complete common tasks are also coming.
 
-## Dependencies
+**Contents:**
+0.
+1.
+2.
+3.
+4.
+5.
+6.
+7.
+8.
+9.
+10.
+
+[Example tasks](#examples-of-what-we-can-do)
+
+## 0 Dependencies
 
 - [tweepy](https://pypi.python.org/pypi/tweepy/2.2)
 - [pymongo](https://pypi.python.org/pypi/pymongo/)
 
 We recommend using the [Anaconda Python](https://store.continuum.io/cshop/anaconda/) distribution, which contains almost all other prereqs for our code, and a bunch of useful python packages besides (numpy, scipy, matplotlib, networkx, etc).
 
-We also use the [pip](http://www.pip-installer.org/en/latest/) package management tool, which is included in Anaconda python.
+We also use the [pip](http://www.pip-installer.org/en/latest/) package management tool, which is included in Anaconda python:
 
-# Functionality
+    pip install tweepy
+    pip install pymongo
 
-## Getting tweets from Twitter
+## 1 Getting tweets from Twitter
 
 ### smappPy.get_tweets:
     
     keyword_tweets(oauth_file, keyword_list, limit_per_keyword)
-
     user_tweets(oauth_file, userid_list, limit_per_user)
-
     geo_tweets(oauth_file, geoloc_list, limit_per_location)
-
 
 These methods query twitter via the REST interface (single-transaction. NOT STREAMING)
 
@@ -42,138 +55,135 @@ These methods query twitter via the REST interface (single-transaction. NOT STRE
 
 ### smappPy.streaming:
 
-    stream_listener.SimpleFileListener  - captures live tweets, stores in txt file
+    stream_listener.SimpleFileListener  # captures live tweets, stores in txt file
 
-    stream_listener.SimpleDBListener     - caputes live tweets, stores in MongoDB
+    stream_listener.SimpleDBListener    # captures live tweets, stores in MongoDB
 
 Can capture "live" tweets based on keyword, user tweeting, and location. (This is a more complex and detailed system than fetching from the REST API. See the code for more.)
 
-## Getting user data from Twitter
+## 2 Getting user data from Twitter
 
 Can capture Twitter user data (including account info, picture, tweet numbers,
 friends, followers, etc)
 
 ### smappPy.user_data:
 
-    get_user_data(oauth_file, userid_list)  - returns a list of twitter user objects for each ID (if valid)
+    get_user_data(oauth_file, userid_list)  # returns a list of twitter user objects for each ID (if valid)
 
 *Note: twitter user object defined [here](https://dev.twitter.com/docs/platform-objects/users)*
 
-## Getting and Storing tweets (files and databases)
+## 3 Getting and Storing tweets (files and databases)
 
 ### smappPy.utilities
 
-    read_tweets_from_file(tweet_file)   - returns a list of tweet objects (json/dict)
-
-    write_tweets_to_file(tweet_file, tweets)    - stores tweets (in json) in a file
+    read_tweets_from_file(tweet_file)           # returns a list of tweet objects (json/dict)
+    write_tweets_to_file(tweet_file, tweets)    # stores tweets (in json) in a file
 
     get_tweets_from_db(server, port, user, password, database, collection, keywords, number)
-
     db_tweets_by_date(server, port, user, password, database, collection, start, end, number)
-
     store_tweets_in_db(server, port, user, password, database, collection, tweets)
 
-    add_random_to_tweet(tweet)  - adds random_number field to tweets
+    add_random_to_tweet(tweet)      # adds random_number field to tweets
+    add_timestamp_to_tweet(tweet)   # adds timestamp corresponding to 'created_at' to tweet
 
-    add_timestamp_to_tweet(tweet)   - adds timestamp corresponding to 'created_at' to tweet
-
-    transform_collection(collection, create_indexes=True)   - Adds timestamp and random fields to a collection of tweets, and creates indexes on collection for faster access to tweets
+    transform_collection(collection, create_indexes=True)   # adds timestamp and random fields to a collection of tweets, and creates indexes on collection for faster access to tweets
 
 *Note: for more complicated queries for getting tweets from a MongoDB instance, we recommend you read up on [pymongo documentation](http://api.mongodb.org/python/2.7rc0/tutorial.html) and [tweet structure](https://dev.twitter.com/docs/platform-objects/tweets)*
 
-*Note: When we store tweets to a MongoDB instance provided, we add two fields for easier data access.*
-*1. random_number - a random decimal (0,1), making it easy to get a random sample of tweets*
-*2. timestamp - a MongoDB Date object / python datetime object (depending on context), making tweets easier to query by time*
+*Note: When we store tweets to a MongoDB instance provided, we add two fields for easier data access: 'random_number' - a random decimal (0,1), making it easy to get a random sample of tweets; and 'timestamp' - a MongoDB Date object / python datetime object (depending on context), making tweets easier to query by datetime*
 
 *Note: to use the 'store_tweets_in_db' function, the given username must have write privileges to the given database.*
 
-## Checking out your tweets
+## 4 Checking out your tweets
 
 ### smappPy.retweet
 
-    is_retweet(tweet)           - checks for all types of retweet (RT)
-    is_official_retweet(tweet)  - checks for literal retweet via Twitter's retweet button
-    is_manual_retweet(tweet)    - checks for manual "RT @someuser ..." type of RT
-    is_partial_retweet(tweet)   - checks for manual RTs with additional text (may just be space)
+    is_retweet(tweet)           # checks for all types of retweet (RT)
+    is_official_retweet(tweet)  # checks for literal retweet via Twitter's retweet button
+    is_manual_retweet(tweet)    # checks for manual "RT @someuser ..." type of RT
+    is_partial_retweet(tweet)   # checks for manual RTs with additional text (may just be space)
 
-    get_user_retweeted(tweet)   - returns a tuple (user ID, user screen name). If manual RT, id is None
-    split_manual_retweet(tweet) - splits a manual Rt into "pre, userRTed, post" text elements
+    get_user_retweeted(tweet)   # returns a tuple (user ID, user screen name). If manual RT, id is None
+    split_manual_retweet(tweet) # splits a manual Rt into "pre, userRTed, post" text elements
 
 ### smappPy.MT
 
-    is_MT(tweet)                - checks for all cases of MT (modified tweets)
-    is_initial_MT(tweet)        - if the MT is the whole tweet
-    is_interior_MT(tweet)       - if the MT comes with additional tweeter commentary
-    split_MT(tweet)             - splits an interior MT into "pre, userMTed, post" elements
+    is_MT(tweet)                # checks for all cases of MT (modified tweets)
+    is_initial_MT(tweet)        # if the MT is the whole tweet
+    is_interior_MT(tweet)       # if the MT comes with additional tweeter commentary
+    split_MT(tweet)             # splits an interior MT into "pre, userMTed, post" elements
 
 ### smappPy.entities
 
-    contains_mention(tweet)     - returns True if tweet contains a mention
-    num_mentions(tweet)         - returns number of mentions in tweet
-    get_users_mentioned(tweet)  - returns a list of users mentioned in the tweet
+    contains_mention(tweet)     # returns True if tweet contains a mention
+    num_mentions(tweet)         # returns number of mentions in tweet
+    get_users_mentioned(tweet)  # returns a list of users mentioned in the tweet
 
-    contains_hashtag(tweet)     - (same as for mentions)
+    contains_hashtag(tweet)     # (same as for mentions)
     num_hashtag(tweet)
     get_hashtag(tweet)
 
-    contains_link(tweet)        - returns True if tweet contains a link (url or media)
+    contains_link(tweet)        # returns True if tweet contains a link (url or media)
     num_links(tweet)
 
-    contains_image(tweet)       - returns True if tweet contains an image post (media)
-    get_image_urls(tweet)       - returns a list of all image URLs contained in the tweet
+    contains_image(tweet)       # returns True if tweet contains an image post (media)
+    get_image_urls(tweet)       # returns a list of all image URLs contained in the tweet
 
-## Tweeted image utilities
+## 5 Tweeted image utilities
 
 ### smappPy.image_util
 
-    save_web_image(url, filename)   - given an image's URL, saves that image to filename
-    get_image_occurrences(tweets)   - given an iterable of tweets, returns a dictionary of image urls and the number of times the occur in the tweet set.
+    save_web_image(url, filename)   # given an image's URL, saves that image to filename
+    get_image_occurrences(tweets)   # given an iterable of tweets, returns a dictionary of image urls and the number of times the occur in the tweet set.
 
-## URL utilities
+## 6 URL utilities
 
-    urllib_get_html(url)    - Uses urllib to download a webpage, returns the page's html as a string
-    requests_get_html(url)  - (same as above, but with requests module instead of urllib)
-    get_html_text(html)     - takes html of a webpage, returns clean plain text of website contents (good for articles!)
-    clean_whitespace(string, replacement=" ")   - replaces all whitespace in a string with, by default, a single space
+    urllib_get_html(url)    # Uses urllib to download a webpage, returns the page's html as a string
+    requests_get_html(url)  # (same as above, but with requests module instead of urllib)
+    get_html_text(html)     # takes html of a webpage, returns clean plain text of website contents (good for articles!)
+    clean_whitespace(string, replacement=" ")   # replaces all whitespace in a string with, by default, a single space
 
 *Note: get_html_text function works via [readability](https://pypi.python.org/pypi/readability-lxml) and [nltk](http://www.nltk.org/)*
 
-## Text processing utilities
+## 7 Text processing utilities
 
 ### smappPy.text_clean
 
-    remove_punctuation(text)    - translates all whitespace chars to single spaces
-    translate_whitespace(text)  - translates most punctuation to single spaces
-    csv_safe(text)  - replaces csv-breaking characters (comma, tab, and newline) with placeholders
-    translate_shorthand(text)   - translate common shorthand to long form (eg: w/ to with)
-    translate_acronyms(text)    - translates some common acronyms to long form.
-    translate_unicode(text)     - translates unicode that breaks some software into ASCII
-    translate_contractions      - translates all unambiguous english language contractions into multiple words
+    remove_punctuation(text)    # translates all whitespace chars to single spaces
+    csv_safe(text)              # replaces csv-breaking characters (comma, tab, and newline) with placeholders
+    
+    translate_whitespace(text)  # translates most punctuation to single spaces
+    translate_shorthand(text)   # translate common shorthand to long form (eg: w/ to with)
+    translate_acronyms(text)    # translates some common acronyms to long form.
+    translate_unicode(text)     # translates unicode that breaks some software into ASCII
+    translate_contractions(text)    # translates all unambiguous english language contractions into multiple words
 
 *Note: all translation and removal functions can (and should) be customized in the translation tables at the top of the text_clean.py code*
 
-## Other functionality
+## 8 Other functionality
 
-    language    - includes python definitions for all Twitter-supported languages
-    date        - date functions to translate twitter date strings to Python datetime objects
-    json_util   - utilities for reading/writing JSON and MongoDB "bson" files
-    oauth       - tools for reading and verifying oauth json files for Twitter authentication
-    autoRT      - a tool to autoretweet any of a set of users' tweets during certain timeframes (to show your rowdy students who are tweeting during class that your twitter game is muy strong, and better than theirs)
+    language    # includes python definitions for all Twitter-supported languages
+    date        # date functions to translate twitter date strings to Python datetime objects
+    json_util   # utilities for reading/writing JSON and MongoDB "bson" files
+    oauth       # tools for reading and verifying oauth json files for Twitter authentication
+    autoRT      # a tool to autoretweet any of a set of users' tweets during certain timeframes (to show your rowdy students who are tweeting during class that your twitter game is muy strong, and better than theirs)
 
-## Analysis (more fun)
+## 9 Analysis (more fun)
 
 ### smappPy.networks
 
-    build_retweet_network(tweets, internal_only?)   - given a collection of tweets, constructs and returns retweet network
-    display_retweet_network(network, outfile?)      - creates a basic display (via matplotlib) of the RT network
+    build_retweet_network(tweets, internal_only=True)       # given a collection of tweets, constructs and returns retweet network
+    display_retweet_network(network, outfile="default")     # creates a basic display (via matplotlib) of the RT network
 
-    export_network(outfile?)    - exports a network to Gephi format (for further processing and vis.)
+    export_network(outfile?)    # exports a network to Gephi format (for further processing and vis.)
 
 *Note: all network functionality is via the networkx package (included in Anaconda python).*
 
-### smappPy.topics  - IN PROGRESS
+### smappPy.topics
+    
+    IN PROGRESS
 
-## Facebook data
+## 10 Facebook data
 
 IN PROGRESS. Basic scripts exist to scrape data from facebook pages.
 
