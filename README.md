@@ -16,15 +16,25 @@ The package is a WIP (eg: eventually, we will include facebook tools). Existing 
 
 **Contents:**
 0. [Dependencies](#0-dependencies)
+
 1. [Tweets from Twitter](#1-getting-tweets-from-twitter)
+
 2. [User data from Twitter](#2-getting-user-data-from-twitter)
+
 3. [Tweets to/from files and DBs](#3-getting-and-storing-tweets-files-and-databases)
+
 4. [Checking out your tweets](#4-checking-out-your-tweets)
+
 5. [Tweeted image utilities](#5-tweeted-image-utilities)
+
 6. [URL utilities](#6-url-utilities)
+
 7. [Text processing utilities](#7-text-processing-utilities)
+
 8. [Other functionality](#8-other-functionality)
+
 9. [Analysis (networks, etc)](#9-analysis-more-fun)
+
 10. [Facebook data](#10-facebook-data)
 
 [Example tasks](#examples-of-what-we-can-do)
