@@ -42,8 +42,8 @@ The package is a WIP (eg: eventually, we will include facebook tools). Existing 
 
 ## 0 Dependencies
 
-- [tweepy](https://pypi.python.org/pypi/tweepy/2.2)
-- [pymongo](https://pypi.python.org/pypi/pymongo/)
+- [tweepy](https://pypi.python.org/pypi/tweepy/2.2) (python interface to the Twitter API)
+- [pymongo](https://pypi.python.org/pypi/pymongo/) (python interface to MongoDB)
 
 We recommend using the [Anaconda Python](https://store.continuum.io/cshop/anaconda/) distribution, which contains almost all other prereqs for our code, and a bunch of useful python packages besides (numpy, scipy, matplotlib, networkx, etc).
 
