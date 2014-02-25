@@ -15,17 +15,17 @@ This includes:
 The package is a WIP (eg: eventually, we will include facebook tools). Existing and future functionality is defined below. Examples of how to use library functions to complete common tasks are also coming.
 
 **Contents:**
-0.
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-8.
-9.
-10.
+0. [Dependencies](#0-dependencies)
+1. [Tweets from Twitter](#1-getting-tweets-from-twitter)
+2. [User data from Twitter](#2-getting-user-data-from-twitter)
+3. [Tweets to/from files and DBs](#3-getting-and-storing-tweets-files-and-databases)
+4. [Checking out your tweets](#4-checking-out-your-tweets)
+5. [Tweeted image utilities](#5-tweeted-image-utilities)
+6. [URL utilities](#6-url-utilities)
+7. [Text processing utilities](#7-text-processing-utilities)
+8. [Other functionality](#8-other-functionality)
+9. [Analysis (networks, etc)](#9-analysis-more-fun)
+10. [Facebook data](#10-facebook-data)
 
 [Example tasks](#examples-of-what-we-can-do)
 
@@ -40,6 +40,8 @@ We also use the [pip](http://www.pip-installer.org/en/latest/) package managemen
 
     pip install tweepy
     pip install pymongo
+
+*Note: this dependency section is not totally complete. Some functions required additional libraries. This section will be updated as dependencies are remembered. (EG: some URL utility functionality requires additional libraries)*
 
 ## 1 Getting tweets from Twitter
 
