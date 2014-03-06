@@ -16,7 +16,7 @@ The package is a WIP (eg: eventually, we will include facebook tools). Existing 
 
 **Contents:**
 
-0. [Dependencies](#0-dependencies)
+[Dependencies](#0-dependencies)
 
 1. [Tweets from Twitter](#1-getting-tweets-from-twitter)
 
