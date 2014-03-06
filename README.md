@@ -24,19 +24,21 @@ The package is a WIP (eg: eventually, we will include facebook tools). Existing 
 
 3. [Tweets to/from files and DBs](#3-getting-and-storing-tweets-files-and-databases)
 
-4. [Checking out your tweets](#4-checking-out-your-tweets)
+4. [Tweet utilities]()
 
-5. [Tweeted image utilities](#5-tweeted-image-utilities)
+5. [Checking out your tweets](#4-checking-out-your-tweets)
 
-6. [URL utilities](#6-url-utilities)
+6. [Tweeted image utilities](#5-tweeted-image-utilities)
 
-7. [Text processing utilities](#7-text-processing-utilities)
+7. [URL utilities](#6-url-utilities)
 
-8. [Other functionality](#8-other-functionality)
+8. [Text processing utilities](#7-text-processing-utilities)
 
-9. [Analysis (networks, etc)](#9-analysis-more-fun)
+9. [Other functionality](#8-other-functionality)
 
-10. [Facebook data](#10-facebook-data)
+10. [Analysis (networks, etc)](#9-analysis-more-fun)
+
+11. [Facebook data](#10-facebook-data)
 
 [Example tasks](#examples-of-what-we-can-do)
 
@@ -87,27 +89,33 @@ friends, followers, etc)
 
 ## 3 Getting and Storing tweets (files and databases)
 
-### smappPy.utilities
+### smappPy.get_tweets
 
-    read_tweets_from_file(tweet_file)           # returns a list of tweet objects (json/dict)
-    write_tweets_to_file(tweet_file, tweets)    # stores tweets (in json) in a file
-
-    get_tweets_from_db(server, port, user, password, database, collection, keywords, number)
+    tweets_from_file(tweetfile)             # returns a list of tweet objects (json/dict)
+    tweets_from_file_IT(tweetfile)          # returns an iterator over tweet objects in file (json/dict)
+    tweets_from_db(server, port, user, password, database, collection, keywords, number)
     db_tweets_by_date(server, port, user, password, database, collection, start, end, number)
-    store_tweets_in_db(server, port, user, password, database, collection, tweets)
+    
+### smappPy.store_tweets
 
-    add_random_to_tweet(tweet)      # adds random_number field to tweets
-    add_timestamp_to_tweet(tweet)   # adds timestamp corresponding to 'created_at' to tweet
-
-    transform_collection(collection, create_indexes=True)   # adds timestamp and random fields to a collection of tweets, and creates indexes on collection for faster access to tweets
+    tweets_to_file(tweets, tweet_file, ...)    # stores tweets (in json) in a file
+    tweets_to_db(server, port, user, password, database, collection, tweets)
 
 *Note: for more complicated queries for getting tweets from a MongoDB instance, we recommend you read up on [pymongo documentation](http://api.mongodb.org/python/2.7rc0/tutorial.html) and [tweet structure](https://dev.twitter.com/docs/platform-objects/tweets)*
 
-*Note: When we store tweets to a MongoDB instance provided, we add two fields for easier data access: 'random_number' - a random decimal (0,1), making it easy to get a random sample of tweets; and 'timestamp' - a MongoDB Date object / python datetime object (depending on context), making tweets easier to query by datetime*
+*Note: When we store tweets to a MongoDB instance provided, we add two fields for easier data access: 'random_number' - a random decimal (0,1), making it easy to get a random sample of tweets; and 'timestamp' - a MongoDB Date object / python datetime object (depending on context), making tweets easier to query by datetime. See Tweet utilities section below.*
 
-*Note: to use the 'store_tweets_in_db' function, the given username must have write privileges to the given database.*
+*Note: to use the 'tweets_to_db' function, the given username must have write privileges to the given database.*
 
-## 4 Checking out your tweets
+## 4 Tweet utilities
+
+### smappy.transform_tweets
+
+    add_random_to_tweet(tweet)      # adds random_number field to tweets
+    add_timestamp_to_tweet(tweet)   # adds timestamp corresponding to 'created_at' to tweet
+    transform_collection(collection, create_indexes=True)   # adds timestamp and random fields to a collection of tweets, and creates indexes on collection for faster access to tweets
+
+## 5 Checking out your tweets
 
 ### smappPy.retweet
 
@@ -142,14 +150,14 @@ friends, followers, etc)
     contains_image(tweet)       # returns True if tweet contains an image post (media)
     get_image_urls(tweet)       # returns a list of all image URLs contained in the tweet
 
-## 5 Tweeted image utilities
+## 6 Tweeted image utilities
 
 ### smappPy.image_util
 
     save_web_image(url, filename)   # given an image's URL, saves that image to filename
     get_image_occurrences(tweets)   # given an iterable of tweets, returns a dictionary of image urls and the number of times the occur in the tweet set.
 
-## 6 URL utilities
+## 7 URL utilities
 
     urllib_get_html(url)    # Uses urllib to download a webpage, returns the page's html as a string
     requests_get_html(url)  # (same as above, but with requests module instead of urllib)
@@ -158,7 +166,7 @@ friends, followers, etc)
 
 *Note: get_html_text function works via [readability](https://pypi.python.org/pypi/readability-lxml) and [nltk](http://www.nltk.org/)*
 
-## 7 Text processing utilities
+## 8 Text processing utilities
 
 ### smappPy.text_clean
 
@@ -173,7 +181,7 @@ friends, followers, etc)
 
 *Note: all translation and removal functions can (and should) be customized in the translation tables at the top of the text_clean.py code*
 
-## 8 Other functionality
+## 9 Other functionality
 
     language    # includes python definitions for all Twitter-supported languages
     date        # date functions to translate twitter date strings to Python datetime objects
@@ -181,7 +189,7 @@ friends, followers, etc)
     oauth       # tools for reading and verifying oauth json files for Twitter authentication
     autoRT      # a tool to autoretweet any of a set of users' tweets during certain timeframes (to show your rowdy students who are tweeting during class that your twitter game is muy strong, and better than theirs)
 
-## 9 Analysis (more fun)
+## 10 Analysis (more fun)
 
 ### smappPy.networks
 
@@ -196,7 +204,7 @@ friends, followers, etc)
     
     IN PROGRESS
 
-## 10 Facebook data
+## 11 Facebook data
 
 IN PROGRESS. Basic scripts exist to scrape data from facebook pages.
 
