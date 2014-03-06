@@ -24,21 +24,21 @@ The package is a WIP (eg: eventually, we will include facebook tools). Existing 
 
 3. [Tweets to/from files and DBs](#3-getting-and-storing-tweets-files-and-databases)
 
-4. [Tweet utilities]()
+4. [Tweet utilities](#4-tweet-utilities)
 
-5. [Checking out your tweets](#4-checking-out-your-tweets)
+5. [Checking out your tweets](#5-checking-out-your-tweets)
 
-6. [Tweeted image utilities](#5-tweeted-image-utilities)
+6. [Tweeted image utilities](#6-tweeted-image-utilities)
 
-7. [URL utilities](#6-url-utilities)
+7. [URL utilities](#7-url-utilities)
 
-8. [Text processing utilities](#7-text-processing-utilities)
+8. [Text processing utilities](#8-text-processing-utilities)
 
-9. [Other functionality](#8-other-functionality)
+9. [Other functionality](#9-other-functionality)
 
-10. [Analysis (networks, etc)](#9-analysis-more-fun)
+10. [Analysis (networks, etc)](#10-analysis-more-fun)
 
-11. [Facebook data](#10-facebook-data)
+11. [Facebook data](#11-facebook-data)
 
 [Example tasks](#examples-of-what-we-can-do)
 
