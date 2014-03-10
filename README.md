@@ -170,10 +170,10 @@ friends, followers, etc)
 
 ### smappPy.text_clean
 
-    remove_punctuation(text)    # translates all whitespace chars to single spaces
+    remove_punctuation(text)    # translates most punctuation to single spaces
     csv_safe(text)              # replaces csv-breaking characters (comma, tab, and newline) with placeholders
     
-    translate_whitespace(text)  # translates most punctuation to single spaces
+    translate_whitespace(text)  # translates all whitespace chars to single spaces
     translate_shorthand(text)   # translate common shorthand to long form (eg: w/ to with)
     translate_acronyms(text)    # translates some common acronyms to long form.
     translate_unicode(text)     # translates unicode that breaks some software into ASCII
