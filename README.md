@@ -136,13 +136,15 @@ friends, followers, etc)
 
 ### smappPy.entities
 
+    remove_entities_from_text(tweet)    # returns tweet text string with all entity strings removed
+
     contains_mention(tweet)     # returns True if tweet contains a mention
     num_mentions(tweet)         # returns number of mentions in tweet
     get_users_mentioned(tweet)  # returns a list of users mentioned in the tweet
 
     contains_hashtag(tweet)     # (same as for mentions)
     num_hashtag(tweet)
-    get_hashtag(tweet)
+    get_hashtags(tweet)
 
     contains_link(tweet)        # returns True if tweet contains a link (url or media)
     num_links(tweet)
