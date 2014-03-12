@@ -51,7 +51,7 @@ symbols:
 """
 
 # General functions
-def remove_entities_from_text(tweet, text=None, remove_hashtags=True):
+def remove_entities_from_text(tweet, text=None, remove_hashtags=True, remove_mentions=True):
     """
     Removes all entity text from tweets using entity indices, not text matching.
     Note: 'text' parameter must match indices of tweet entities (ie, text should be 
@@ -81,11 +81,11 @@ def remove_entities_from_text(tweet, text=None, remove_hashtags=True):
         for s in tweet["entities"]["symbols"]:
             l_index, r_index = s["indices"][0], s["indices"][1]
             text_list[l_index:r_index] = [None] * (r_index - l_index)
-    if "hashtags" in tweet["entities"] and remove_hashtags: 
+    if remove_hashtags and "hashtags" in tweet["entities"]: 
         for h in tweet["entities"]["hashtags"]:
             l_index, r_index = h["indices"][0], h["indices"][1]
             text_list[l_index:r_index] = [None] * (r_index - l_index)
-    if "user_mentions" in tweet["entities"]:
+    if remove_mentions and "user_mentions" in tweet["entities"]:
         for um in tweet["entities"]["user_mentions"]:
             l_index, r_index = um["indices"][0], um["indices"][1]
             text_list[l_index:r_index] = [None] * (r_index - l_index)
