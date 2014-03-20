@@ -199,6 +199,17 @@ def remove_punctuation(text):
         text = text.replace(p, punctuation_trans[p])
     return text
 
+def remove_all_punctuation(text, keep_hashtags=False, keep_mentions=False):
+    """Does a strict remove of anything that is not a letter or digit char"""
+    if keep_mentions and keep_hashtags:
+        return re.sub(r"[^a-zA-Z0-9@#_ ]", "", text)
+    elif keep_mentions:
+        return re.sub(r"[^a-zA-Z0-9@_ ]", "", text)
+    elif keep_hashtags:
+        return re.sub(r"[^a-zA-Z0-9#_ ]", "", text)
+    else:
+        return re.sub(r"[^a-zA-Z0-9_ ]", "", text)
+
 def translate_whitespace(text):
     """Replaces any non-single-space whitespace chars (tabs, newlines..). Returns cleaned string"""
     for w in whitespace_trans:
@@ -235,8 +246,5 @@ def translate_contractions(text):
     for c in contraction_trans:
         text = text.replace(c, contraction_trans[c])
     return text
-
-
-
 
 
