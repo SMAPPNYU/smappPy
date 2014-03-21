@@ -41,6 +41,8 @@ shorthand_trans = {
     "&amp": "and",
     "w/": "with",
     "w/o": "without",
+    "b/c": "because",
+    "b/t": "between",
 }
 
 acronym_trans = [
@@ -247,5 +249,3 @@ def translate_contractions(text):
     for c in contraction_trans:
         text = text.replace(c, contraction_trans[c])
     return text
-
-
