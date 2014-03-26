@@ -206,6 +206,20 @@ friends, followers, etc)
     
     IN PROGRESS
 
+    utilities.get_topic_string(model, topic_id, top_n)      # Returns a string representing a topic from given model
+    utilities.get_short_topic_string(%)                     # Same, different representation
+    utilities.get_topic_strings(model, num_topics, top_n, ordered)  # Returns a list of representative topic strings
+
+    utilities.get_doc_topic_strings(corpus, model. num_docs, topic_threshold, min_topics, topic_words)
+                                                            # Prints documents in a corpus, the document's topics, and the topic's words
+
+    # All functions above can also be "print"changed, eg: utilities.print_topic_strings(...)
+
+    visualization.topic_barchart(corpus, model, topic_threshold, show, outfile, bar_width, trim)
+                                                            # Creates, shows, and saves a barchart representing topic occurence in all corpus docs (if topic is >= threshold for that doc)
+
+
+
 ## 11 Facebook data
 
 IN PROGRESS. Basic scripts exist to scrape data from facebook pages.
