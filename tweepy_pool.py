@@ -48,21 +48,19 @@ class APIPool(object):
 	def _call_with_throttling(self, method_name, *args, **kwargs):
 		now = datetime.now()
 		api, throttled_at, idx = self._pick_api_with_shortest_waiting_time()
-
 		time_since_throttle = (now - throttled_at).seconds
 		to_wait = self.time_to_wait - time_since_throttle + 1
 
 		if to_wait > 0:
 			time.sleep(to_wait)
 		try:
-			ret = api.__getattribute__(method_name)(*args, **kwargs)
+			return api.__getattribute__(method_name)(*args, **kwargs)
 		except TweepError as e:
 			if e.message[0]['code'] == RATE_LIMIT_ERROR:
 				self.apis[idx][1] = now
-				self.user_timeline(**kwargs)
+				return self._call_with_throttling(method_name, *args, **kwargs)
 			else:
 				raise e
-		return ret
 
 	def __getattribute__(self, name):
 		def api_method(*args, **kwargs):
