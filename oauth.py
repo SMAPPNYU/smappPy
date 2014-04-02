@@ -11,9 +11,10 @@ class AuthCheckException(Exception):
     """
     pass
 
-def tweepy_auth(oauth_dict):
-    """Create and return a tweepy.OAuthHandler object from an auth dict"""
+def tweepy_auth(filename):
+    """Create and return a tweepy.OAuthHandler object from a file containing oauth fields"""
     import tweepy
+    oauth_dict = read_oauth(filename)
     auth = tweepy.OAuthHandler(oauth_dict["consumer_key"], oauth_dict["consumer_secret"])
     auth.set_access_token(oauth_dict["access_token"], oauth_dict["access_token_secret"])
     return auth
