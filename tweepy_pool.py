@@ -12,7 +12,11 @@ from tweepy import TweepError
 RATE_LIMIT_ERROR = 88
 
 class APIPool(object):
-	"""Twitter API Pool"""
+	"""
+	Twitter API Pool.
+	This class wraps a pool of `tweepy.api.API` objects, and delegates function calls to them,
+	cycling through them when a twitter api rate limit is reached.
+	"""
 
 	def __init__(self, oauths=None, oauths_filename=None, time_to_wait=15*60):
 		"""
@@ -41,7 +45,7 @@ class APIPool(object):
 				ret_api, ret_throttled_at, ret_idx = api, throttled_at, idx
 		return ret_api, ret_throttled_at, ret_idx
 
-	def user_timeline(self, **kwargs):
+	def _call_with_throttling(self, method_name, *args, **kwargs):
 		now = datetime.now()
 		api, throttled_at, idx = self._pick_api_with_shortest_waiting_time()
 
@@ -51,10 +55,20 @@ class APIPool(object):
 		if to_wait > 0:
 			time.sleep(to_wait)
 		try:
-			ret = api.user_timeline(**kwargs)
+			ret = api.__getattribute__(method_name)(*args, **kwargs)
 		except TweepError as e:
 			if e.message[0]['code'] == RATE_LIMIT_ERROR:
 				self.apis[idx][1] = now
 				self.user_timeline(**kwargs)
 			else:
 				raise e
+		return ret
+
+	def __getattribute__(self, name):
+		def api_method(*args, **kwargs):
+			return self._call_with_throttling(name, *args, **kwargs)
+
+		if name in tweepy.API.__dict__:
+			return api_method
+		else:
+			return object.__getattribute__(self, name)
