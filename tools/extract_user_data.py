@@ -20,12 +20,12 @@ from pymongo.errors import ConnectionFailure
 def extract_user_data(collection, outfile, start_date=None, end_date=None, update=10000):
     """
     Extracts user aggregate information from the given collection OF TWEETS, prints basic
-    data and outputs a CSV. Fields: ScreenName,Name,UserId,FriendsCount,FollowersCount,
+    data and outputs a CSV. Fields: ScreenName,Name,UserId,Lang,FriendsCount,FollowersCount,
     Location,NumTweets.
     Takes optional date ranges to constrain query (gte start, lte end. ie, inclusive).
     If only one term specified, take everything before end or after start.
     """
-    csv_header = ["ScreenName", "Name", "UserId", "FriendsCount", "FollowersCount", "Location", "NumTweets"]
+    csv_header = ["ScreenName", "Name", "UserId", "Lang", "FriendsCount", "FollowersCount", "Location", "NumTweets"]
 
     if start_date and not end_date:
         tweets = collection.find({"timestamp": {"$gte": start_date}})
@@ -56,6 +56,7 @@ def extract_user_data(collection, outfile, start_date=None, end_date=None, updat
         user_data[uid] = [tweet['user']['screen_name'].encode("utf8"),
                           tweet['user']['name'].replace(",","").replace("\n","").encode("utf8"),
                           tweet['user']['id_str'],
+                          tweet['user']['lang'],
                           tweet['user']['friends_count'],
                           tweet['user']['followers_count'],
                           tweet['user']['location'].replace(",","").replace("\n","").encode("utf8"),
