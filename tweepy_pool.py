@@ -56,7 +56,9 @@ class APIPool(object):
 		try:
 			return api.__getattribute__(method_name)(*args, **kwargs)
 		except TweepError as e:
-			if e.message[0]['code'] == RATE_LIMIT_ERROR:
+
+
+			if type(e.message) == list and e.message[0]['code'] == RATE_LIMIT_ERROR:
 				self.apis[idx][1] = now
 				return self._call_with_throttling(method_name, *args, **kwargs)
 			else:
