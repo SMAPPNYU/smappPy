@@ -67,6 +67,7 @@ class APIPool(object):
 			return self._call_with_throttling(name, *args, **kwargs)
 
 		if name in tweepy.API.__dict__:
+			api_method.pagination_mode = self.apis[0][0].__getattribute__(name).pagination_mode
 			return api_method
 		else:
 			return object.__getattribute__(self, name)
