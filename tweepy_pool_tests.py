@@ -112,6 +112,8 @@ def test_pick_api_with_earliest_throttle_time_when_last_in_list():
 def test_with_1_api_in_pool_calls_api_when_no_time_to_wait():
 	api_mock = MagicMock(spec=tweepy.API)
 	api_mock.return_value = api_mock
+	ut_mock = Mock(return_value=0)
+	api_mock.user_timeline = ut_mock
 
 	with patch('tweepy.API', api_mock):
 		api_pool = tweepy_pool.APIPool([OAUTH_DICT])
@@ -132,6 +134,8 @@ def raise_error_once():
 def test_with_1_api_in_pool_sets_throttle_time_if_rate_limit_error():
 	api_mock = MagicMock(spec=tweepy.API)
 	api_mock.return_value = api_mock
+	ut_mock = Mock(return_value=0)
+	api_mock.user_timeline = ut_mock
 
 	api_mock.user_timeline.side_effect = raise_error_once()
 
@@ -146,7 +150,11 @@ def test_tries_same_request_on_other_api_if_one_is_throttled_with_no_sleep():
 	api_mock_1 = MagicMock()
 	api_mock_2 = MagicMock()
 
-	api_mock_1.user_timeline.side_effect = raise_error_once()
+	ut_mock_1 = Mock(side_effect=raise_error_once())
+	api_mock_1.user_timeline = ut_mock_1
+
+	ut_mock_2 = Mock(return_value=0)
+	api_mock_2.user_timeline = ut_mock_2
 
 	api_pool = tweepy_pool.APIPool([OAUTH_DICT, OAUTH_DICT])
 	api_pool.apis[0][0] = api_mock_1
@@ -163,6 +171,8 @@ def test_tries_same_request_on_other_api_if_one_is_throttled_with_no_sleep():
 def test_waits_if_rate_limit_exceeded_and_no_other_available_api():
 	api_mock = MagicMock(spec=tweepy.API)
 	api_mock.return_value = api_mock
+	ut_mock = Mock(return_value=0)
+	api_mock.user_timeline = ut_mock
 
 	api_mock.user_timeline.side_effect = raise_error_once()
 
