@@ -18,13 +18,14 @@ class APIPool(object):
 	cycling through them when a twitter api rate limit is reached.
 	"""
 
-	def __init__(self, oauths=None, oauths_filename=None, time_to_wait=15*60):
+	def __init__(self, oauths=None, oauths_filename=None, time_to_wait=15*60, debug=False):
 		"""
 		Instantiate APIPool using either a list of oauths (which are dicts with keys secrets and tokens)
 		or using a file which contains these in JSON format.
 		"""
 
 		self.time_to_wait = time_to_wait
+		self.debug = debug
 
 		if oauths_filename:
 			with open(oauths_filename) as file:
@@ -52,6 +53,8 @@ class APIPool(object):
 		to_wait = self.time_to_wait - time_since_throttle + 1
 
 		if to_wait > 0:
+			if self.debug:
+				print "Rate limits exhausted, waiting {0} seconds".format(to_wait)
 			time.sleep(to_wait)
 		try:
 			return api.__getattribute__(method_name)(*args, **kwargs)
