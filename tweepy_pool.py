@@ -54,7 +54,7 @@ class APIPool(object):
 
 		if to_wait > 0:
 			if self.debug:
-				print "Rate limits exhausted, waiting {0} seconds".format(to_wait)
+				print "<{1}>: Rate limits exhausted, waiting {0} seconds".format(to_wait, now.strftime('%H:%M:%S'))
 			time.sleep(to_wait)
 		try:
 			return api.__getattribute__(method_name)(*args, **kwargs)
