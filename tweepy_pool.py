@@ -1,7 +1,7 @@
 """
 Implements a pooled tweepy API, for using multiple accounts with rate limiting.
 """
-
+import logging
 import tweepy
 import oauth
 import json
@@ -25,7 +25,6 @@ class APIPool(object):
 		"""
 
 		self.time_to_wait = time_to_wait
-		self.debug = debug
 
 		if oauths_filename:
 			with open(oauths_filename) as file:
@@ -40,6 +39,7 @@ class APIPool(object):
 		return auth
 
 	def _pick_api_with_shortest_waiting_time(self):
+		# Idea: rather than remembering throttled_at, remember throttled_at for each api-method, cause the rate limits are different.
 		ret_idx, (ret_api, ret_throttled_at) = 0, self.apis[0]
 		for idx, (api, throttled_at) in enumerate(self.apis):
 			if throttled_at < ret_throttled_at:
@@ -53,8 +53,7 @@ class APIPool(object):
 		to_wait = self.time_to_wait - time_since_throttle + 1
 
 		if to_wait > 0:
-			if self.debug:
-				print "<{1}>: Rate limits exhausted, waiting {0} seconds".format(to_wait, now.strftime('%H:%M:%S'))
+			logging.debug("<{1}>: Rate limits exhausted, waiting {0} seconds".format(to_wait, now.strftime('%H:%M:%S')))
 			time.sleep(to_wait)
 		try:
 			return api.__getattribute__(method_name)(*args, **kwargs)
