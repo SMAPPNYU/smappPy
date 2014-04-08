@@ -45,6 +45,19 @@ shorthand_trans = {
     "b/t": "between",
 }
 
+number_trans = {
+    "1": " one ",
+    "2": " two ",
+    "3": " three ",
+    "4": " four ",
+    "5": " five ",
+    "6": " six ",
+    "7": " seven ",
+    "8": " eight ",
+    "9": " nine ",
+    "0": " zero ",
+}
+
 acronym_trans = [
     (re.compile(r"^US\s|\sUS\s|\sUS$"), " United States "),
     (re.compile(r"^EU\s|\sEU\s|\sEU$"), " European Union "),
@@ -229,6 +242,12 @@ def translate_shorthand(text):
     """Translate common shorthand terms into long form. Returns translated string"""
     for s in shorthand_trans:
         text = text.replace(s, shorthand_trans[s])
+    return text
+
+def translate_numbers_simple(text):
+    """Naive translation of digit characters to corresponding number words. No scaling."""
+    for key, rep in number_trans.items():
+        text = text.replace(key, rep)
     return text
 
 def translate_acronyms(text):
