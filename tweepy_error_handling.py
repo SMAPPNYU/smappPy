@@ -28,7 +28,7 @@ def call_with_error_handling(function, *args, **kwargs):
             elif e.message[0]["code"] == 131:
                 print ".. Unknown internal twitter error (131)"
             return (None, e.message[0]["code"])
-        elif type(e.message) == str:
+        elif type(e.message) in [str, unicode]:
             print ".. Error: {0}".format(e)
             return (None, 1)
         raise(e)
