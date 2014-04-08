@@ -43,6 +43,8 @@ shorthand_trans = {
     "w/o": "without",
     "b/c": "because",
     "b/t": "between",
+    " b4 ": " before ",
+    " 2day": " today",
 }
 
 number_trans = {
@@ -56,6 +58,21 @@ number_trans = {
     "8": " eight ",
     "9": " nine ",
     "0": " zero ",
+}
+
+ordinal_trans = {
+    "1st": "first",
+    "2nd": "second",
+    "3rd": "third",
+    "4th": "fourth",
+    "5th": "fifth",
+    "6th": "sixth",
+    "7th": "seventh",
+    "8th": "eighth",
+    "9th": "ninth",
+    "10th": "tenth",
+    "11th": "eleventh",
+    "12th": "twelfth",
 }
 
 acronym_trans = [
@@ -248,6 +265,14 @@ def translate_numbers_simple(text):
     """Naive translation of digit characters to corresponding number words. No scaling."""
     for key, rep in number_trans.items():
         text = text.replace(key, rep)
+    return text
+
+def translate_ordinals(text):
+    """Translate ordinal digit strings up two twelve(fth)"""
+    for key, rep in ordinal_trans.items():
+        text = re.sub(" {0}".format(key), " {0}".format(rep), text)
+        text = re.sub("^{0} ".format(key), "{0} ".format(rep), text)
+        text = re.sub(" {0}$".format(key), " {0}".format(rep), text)
     return text
 
 def translate_acronyms(text):
