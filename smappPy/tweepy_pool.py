@@ -80,6 +80,6 @@ class APIPool(object):
 
     def _pagination_mode_for(self,name):
         if self._api_call_supports_pagination(name):
-            return self.apis[0][0].__getattribute__(name).pagination_mode
+            return self._apis[0][0].__getattribute__(name).pagination_mode
         else:
             return None
