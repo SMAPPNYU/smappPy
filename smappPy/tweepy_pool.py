@@ -76,7 +76,7 @@ class APIPool(object):
             return object.__getattribute__(self, name)
 
     def _api_call_supports_pagination(self, name):
-        return 'pagination_mode' in self.apis[0][0].__getattribute__(name).__dict__
+        return 'pagination_mode' in self._apis[0][0].__getattribute__(name).__dict__
 
     def _pagination_mode_for(self,name):
         if self._api_call_supports_pagination(name):
