@@ -31,16 +31,12 @@ class APIPool(object):
                 oauths = json.load(file)
 
         oauth_handlers = [self._get_tweepy_oauth_handler(oauth_dict) for oauth_dict in oauths]
-        self.apis = [[tweepy.API(oauth_handler), datetime.min] for oauth_handler in oauth_handlers]
         self._apis =[[tweepy.API(oauth_handler), dict()] for oauth_handler in oauth_handlers]
 
     def _get_tweepy_oauth_handler(self, oauth_dict):
         auth = tweepy.OAuthHandler(oauth_dict["consumer_key"], oauth_dict["consumer_secret"])
         auth.set_access_token(oauth_dict["access_token"], oauth_dict["access_token_secret"])
         return auth
-
-
-    #### This is an attempt to implement per-method throttling-awareness ####
 
     def _pick_api_with_shortest_waiting_time_for_method(self, method_name):
         ret_api_struct = self._apis[0]
@@ -69,38 +65,9 @@ class APIPool(object):
             else:
                 raise e
 
-    #### End attempt at new implementation ####
-
-    def _pick_api_with_shortest_waiting_time(self):
-        # Idea: rather than remembering throttled_at, remember throttled_at for each api-method, cause the rate limits are different.
-        ret_idx, (ret_api, ret_throttled_at) = 0, self.apis[0]
-        for idx, (api, throttled_at) in enumerate(self.apis):
-            if throttled_at < ret_throttled_at:
-                ret_api, ret_throttled_at, ret_idx = api, throttled_at, idx
-        return ret_api, ret_throttled_at, ret_idx
-
-    def _call_with_throttling(self, method_name, *args, **kwargs):
-        now = datetime.now()
-        api, throttled_at, idx = self._pick_api_with_shortest_waiting_time()
-        time_since_throttle = (now - throttled_at).seconds
-        to_wait = self.time_to_wait - time_since_throttle + 1
-
-        if to_wait > 0:
-            logging.debug("<{1}>: Rate limits exhausted, waiting {0} seconds".format(to_wait, now.strftime('%H:%M:%S')))
-            time.sleep(to_wait)
-
-        try:
-            return api.__getattribute__(method_name)(*args, **kwargs)
-        except TweepError as e:
-            if type(e.message) == list and e.message[0]['code'] == RATE_LIMIT_ERROR:
-                self.apis[idx][1] = now
-                return self._call_with_throttling(method_name, *args, **kwargs)
-            else:
-                raise e
-
     def __getattribute__(self, name):
         def api_method(*args, **kwargs):
-            return self._call_with_throttling(name, *args, **kwargs)
+            return self._call_with_throttling_per_method(name, *args, **kwargs)
 
         if name in tweepy.API.__dict__:
             api_method.pagination_mode = self._pagination_mode_for(name)
