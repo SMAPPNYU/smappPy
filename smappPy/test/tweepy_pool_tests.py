@@ -42,7 +42,7 @@ def test_init_with_dict():
 
     api_pool = tweepy_pool.APIPool(oauth_dicts)
 
-    assert len(api_pool.apis) == 1
+    assert len(api_pool._apis) == 1
 
 def test_init_with_filename():
     """
@@ -60,7 +60,7 @@ def test_init_with_filename():
     with patch('__builtin__.open', mock_open):
         api_pool = tweepy_pool.APIPool(oauths_filename='oauths-file')
 
-    eq_(2, len(api_pool.apis))
+    eq_(2, len(api_pool._apis))
 
 def test_file_mocking():
     file_mock = MagicMock(spec=file)
@@ -75,56 +75,6 @@ def test_file_mocking():
             file_contents = f.read()
 
     eq_('Hello, World!', file_contents)
-
-def test_pick_api_with_earliest_throttle_time_when_first_in_list():
-    today = datetime.now()
-    tomorrow = datetime.now() + timedelta(days=1)
-
-    api_pool = tweepy_pool.APIPool([OAUTH_DICT])
-
-    api_pool.apis = [['first',  today],
-                     ['second', tomorrow]]
-
-    api, throttledat, idx = api_pool._pick_api_with_shortest_waiting_time()
-
-    eq_(idx, 0)
-    eq_(api, 'first')
-    eq_(throttledat, today)
-
-def test_pick_api_with_earliest_throttle_time_when_in_middle_of_list():
-    today = datetime.now()
-    tomorrow = today + timedelta(days=1)
-    yesterday = today + timedelta(days=-1)
-
-    api_pool = tweepy_pool.APIPool([OAUTH_DICT])
-
-    api_pool.apis = [['first',  today],
-                     ['second', yesterday],
-                     ['third', tomorrow]]
-
-    api, throttledat, idx = api_pool._pick_api_with_shortest_waiting_time()
-
-    eq_(idx, 1)
-    eq_(api, 'second')
-    eq_(throttledat, yesterday)
-
-def test_pick_api_with_earliest_throttle_time_when_last_in_list():
-    today = datetime.now()
-    tomorrow = today + timedelta(days=1)
-    yesterday = today + timedelta(days=-1)
-
-    api_pool = tweepy_pool.APIPool([OAUTH_DICT])
-
-    api_pool.apis = [['first',  today],
-                     ['second', tomorrow],
-                     ['third', yesterday]]
-
-    api, throttledat, idx = api_pool._pick_api_with_shortest_waiting_time()
-
-    eq_(idx, 2)
-    eq_(api, 'third')
-    eq_(throttledat, yesterday)
-
 
 def test_with_1_api_in_pool_calls_api_when_no_time_to_wait():
     """
@@ -158,7 +108,7 @@ def test_with_1_api_in_pool_sets_throttle_time_if_rate_limit_error():
             api_pool = tweepy_pool.APIPool([OAUTH_DICT])
             api_pool.user_timeline(user_id=234)
     api_mock.user_timeline.assert_called_with(user_id=234)
-    ok_(api_pool.apis[0][1] > datetime.min)
+    ok_(api_pool._apis[0][1]['user_timeline'] > datetime.min)
 
 def test_tries_same_request_on_other_api_if_one_is_throttled_with_no_sleep():
     """
@@ -175,8 +125,8 @@ def test_tries_same_request_on_other_api_if_one_is_throttled_with_no_sleep():
     api_mock_2.user_timeline = ut_mock_2
 
     api_pool = tweepy_pool.APIPool([OAUTH_DICT, OAUTH_DICT])
-    api_pool.apis[0][0] = api_mock_1
-    api_pool.apis[1][0] = api_mock_2
+    api_pool._apis[0][0] = api_mock_1
+    api_pool._apis[1][0] = api_mock_2
 
     sleep_mock = MagicMock()
     with patch('time.sleep', sleep_mock):
