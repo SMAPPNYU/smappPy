@@ -6,6 +6,7 @@ Created by dpb on 8/21/2013
 
 import re
 import simplejson as json
+from simplejson import JSONDecodeError
 
 FLAGS = re.VERBOSE | re.MULTILINE | re.DOTALL
 WHITESPACE = re.compile(r'[ \t\n\r]*', FLAGS)
@@ -29,3 +30,51 @@ class ConcatJSONDecoder(json.JSONDecoder):
             objs.append(obj)
         return objs
 
+
+class StreamJsonListLoader():
+    """
+    When you have a big JSON file containint a list, such as
+
+    [{
+        ...
+    },
+    {
+        ...
+    },
+    {
+        ...
+    },
+    ...
+    ]
+
+    And it's too big to be practically loaded into memory and parsed by json.load,
+    This class comes to the rescue. It lets you lazy-load the large json list.
+    """
+
+    def __init__(self, filename_or_stream):
+        if type(filename_or_stream) == str:
+            self.stream = open(filename_or_stream)
+        else:
+            self.stream = filename_or_stream
+
+        if not self.stream.read(1) == '[':
+            raise NotImplementedError('Only JSON-streams of lists (that start with a [) are supported.')
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        read_buffer = self.stream.read(1)
+        while True:
+            try:
+                json_obj = json.loads(read_buffer)
+
+                if not self.stream.read(1) in [',',']']:
+                    raise Exception('JSON seems to be malformed: object is not followed by comma (,) or end of list (]).')
+                return json_obj
+            except JSONDecodeError:
+                next_char = self.stream.read(1)
+                if next_char == '':
+                    break
+                read_buffer += next_char
+        raise StopIteration
