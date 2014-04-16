@@ -74,7 +74,9 @@ class StreamJsonListLoader():
                 return json_obj
             except JSONDecodeError:
                 next_char = self.stream.read(1)
-                if next_char == '':
-                    break
                 read_buffer += next_char
-        raise StopIteration
+                while next_char != '}':
+                    next_char = self.stream.read(1)
+                    if next_char == '':
+                        raise StopIteration
+                    read_buffer += next_char
