@@ -23,6 +23,13 @@ punctuation_trans = {
     ";": " ",
     ":": " ",
     "\"": "",
+    "!": "",
+    "?": "",
+    "(": " ",
+    ")": " ",
+    "[": " ",
+    "]": " ",
+    "=": " ",
     #"#": " ",
 }
 
@@ -226,6 +233,16 @@ contraction_trans = {
     "you've": "you have"
 }
 
+def remove_short_words(text, length=3):
+    """Removes all words with length < 'length' param"""
+    text = [w for w in text.split() if len(w) >= length]
+    return " ".join(text)
+
+def remove_link_text(text):
+    """Attempts to match and remove hyperlink text"""
+    text = re.sub(r"http://\S*", "", text)
+    return text
+
 def remove_punctuation(text):
     """Translates some punctuation (not apostrophes) from text. Returns cleaned string"""
     for p in punctuation_trans:
@@ -242,6 +259,21 @@ def remove_all_punctuation(text, keep_hashtags=False, keep_mentions=False):
         return re.sub(r"[^a-zA-Z0-9#_ ]", "", text)
     else:
         return re.sub(r"[^a-zA-Z0-9_ ]", "", text)
+
+def remove_RT_MT(text):
+    """Removes all hanging instances of 'RT' and 'MT'. NOTE: Expects lower case"""
+    text = re.sub(r" rt ", " ", text)
+    text = re.sub(r"^rt ", " ", text)
+    text = re.sub(r" rt$", " ", text)
+
+    text = re.sub(r" mt ", " ", text)
+    text = re.sub(r"^mt ", " ", text)
+    text = re.sub(r" mt$", " ", text)
+    return text
+
+def clean_whitespace(text):
+    """Alternate method of cleaning whitespace"""
+    return " ".join(text.split())
 
 def translate_whitespace(text):
     """Replaces any non-single-space whitespace chars (tabs, newlines..). Returns cleaned string"""
