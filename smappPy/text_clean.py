@@ -243,6 +243,13 @@ def remove_link_text(text):
     text = re.sub(r"http://\S*", "", text)
     return text
 
+def http_cleaner(text):
+    """Removes mysteriously hanging 'http' instances"""
+    text = re.sub(r"^http ", " ", text)
+    text = re.sub(r" http ", " ", text)
+    text = re.sub(r" http$", " ", text)
+    return text
+
 def remove_punctuation(text):
     """Translates some punctuation (not apostrophes) from text. Returns cleaned string"""
     for p in punctuation_trans:

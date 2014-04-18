@@ -51,6 +51,8 @@ def clean_docs(doc_iterator, out_handle, stopwords, keep_hashtags,
         doc = remove_link_text(doc)     # MUST BEFORE PUNCTUATION
         # print ".. Remove punctuation"
         doc = remove_punctuation(doc)
+        # print ".. Remove hanging 'http's"
+        doc = http_cleaner(doc)
         # print ".. Remove short words"
         doc = remove_short_words(doc)
         # print ".. Remove stopwords"
