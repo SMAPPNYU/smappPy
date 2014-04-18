@@ -7,6 +7,26 @@ Relies heavily on Gensim object (http://radimrehurek.com/gensim/apiref.html)
 @date 3/25/2014
 """
 
+def print_topics(model, num_topics=-1, top_n=5, ordered=True):
+    """Prints formatted topic strings"""
+    for tstr in get_topic_strings(model, num_topics, top_n, ordered):
+        print tstr
+
+def print_topics_wpl(model, num_topics=-1, top_n=5, ordered=True):
+    """Prints formatted topics, with Topic heading and then word-per-line"""
+    for tstr in get_topic_strings(model, num_topics, top_n, ordered, wpl=True):
+        print tstr
+
+def print_doc_topics(corpus, model, num_docs=-1, topic_threshold=0.2,  min_topics=2, topic_words=5):
+    """Prints a document-topic string for given parameters"""
+    for dtstr in get_doc_topic_strings(corpus, 
+                                       model, 
+                                       num_docs=num_docs, 
+                                       topic_threshold=topic_threshold,
+                                       min_topics=min_topics,
+                                       topic_words=topic_words):
+        print dtstr
+
 def get_short_topic_string(model, topic_id, top_n=5):
     """Shorter version of string"""
     topic = model.show_topic(topic_id, topn=top_n)
@@ -25,16 +45,20 @@ def get_topic_string(model, topic_id, top_n=5):
         tstr += " {0:.3f} {1:<10} |".format(p, word)
     return tstr
 
-def print_topics(model, num_topics=-1, top_n=5, ordered=True):
-    """Prints formatted topic strings"""
-    for tstr in get_topic_strings(model, num_topics, top_n, ordered):
-        print tstr
+def get_topic_wpl_string(model, topic_id, top_n=5):
+    """Get string repr of topic with word-per-line"""
+    topic = model.show_topic(topic_id, topn=top_n)
+    tstr = "Topic {0}:".format(topic_id)
+    for p,word in topic:
+        tstr += "\n\t{0:.3f} {1}".format(p, word)
+    return tstr
 
-def get_topic_strings(model, num_topics=-1, top_n=5, ordered=True):
+def get_topic_strings(model, num_topics=-1, top_n=5, ordered=True, wpl=False):
     """Given a model with trained topics, return list of formatted topic strings.
     If num_topics=-1, prints all topics
     If ordered=False, prints random selection of topics (via gensim show_topics)
     If ordered=True, prints topics in order, with associated topic ID
+    If wpl=True, get word-per-line topic strings (multiline output per topic)
     """
     tstrings = []
     if num_topics > model.num_topics:
@@ -51,20 +75,13 @@ def get_topic_strings(model, num_topics=-1, top_n=5, ordered=True):
     for i in range(len(topics)):
         tstr = "Topic {0}: ".format(i) if ordered else "Topic: "
         for wordprob in sorted(topics[i], key=lambda p: p[0], reverse=True):
-            tstr += " {0:.3f} {1:<15} |".format(wordprob[0], wordprob[1])
+            if wpl:
+                tstr += "\n\t{0:.3f} {1}".format(wordprob[0], wordprob[1])
+            else:
+                tstr += " {0:.3f} {1:<15} |".format(wordprob[0], wordprob[1])
         tstrings.append(tstr)
 
     return tstrings
-
-def print_doc_topics(corpus, model, num_docs=-1, topic_threshold=0.2,  min_topics=2, topic_words=5):
-    """Prints a document-topic string for given parameters"""
-    for dtstr in get_doc_topic_strings(corpus, 
-                                       model, 
-                                       num_docs=num_docs, 
-                                       topic_threshold=topic_threshold,
-                                       min_topics=min_topics,
-                                       topic_words=topic_words):
-        print dtstr
 
 def get_doc_topic_strings(corpus, model, num_docs=-1, topic_threshold=0.2, min_topics=2, topic_words=5):
     """Given a corpus of documents and a model, get strings representing the topics 
