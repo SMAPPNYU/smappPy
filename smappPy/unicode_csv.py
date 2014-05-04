@@ -55,7 +55,7 @@ class UnicodeWriter:
 
     def writerow(self, row):
         try:
-            self.writer.writerow([s.encode("utf-8") for s in row])
+            self.writer.writerow(map(self.utf8_encode, row))
         except UnicodeDecodeError:
             print row
             raise
@@ -76,3 +76,7 @@ class UnicodeWriter:
         for row in rows:
             self.writerow(row)
 
+    def utf8_encode(self, thing):
+        if not isinstance(thing, basestring):
+            thing = unicode(thing)
+        return thing.encode("utf-8")
