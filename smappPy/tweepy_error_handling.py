@@ -2,6 +2,7 @@
 Twitter error handling functions
 """
 
+from ssl import SSLError
 from httplib import IncompleteRead
 from tweepy.error import TweepError
 
@@ -13,6 +14,7 @@ def call_with_error_handling(function, *args, **kwargs):
     when function executes successfully. Custom Error Codes:
         1   - Unknown Twitter error
         2   - HTTPLib incomplete read error
+        3   - SSL Read timeout error
     """
     #TODO: Extend to consider as many twitter error codes as you have patience for
     #TODO: (https://dev.twitter.com/docs/error-codes-responses)
@@ -38,5 +40,8 @@ def call_with_error_handling(function, *args, **kwargs):
     except IncompleteRead as i:
         print ".. HTTPLib incomplete read error: {0}".format(i)
         return (None, 2)
+    except SSLError as s:
+        print ".. SSL read timeout error: {0}".format(s)
+        return (None, 3)
 
     return (ret, 0)
