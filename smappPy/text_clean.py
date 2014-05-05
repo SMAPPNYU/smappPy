@@ -35,8 +35,6 @@ punctuation_trans = {
 
 csvsafe_trans = {
     ",": "[c]",
-    "\n": "[n]",
-    "\t": "[t]",
 }
 
 whitespace_trans = {
@@ -290,6 +288,7 @@ def translate_whitespace(text):
 
 def csv_safe(text):
     """Makes text CSV-safe (no commas, tabs, newlines, etc). Returns cleaned string"""
+    text = clean_whitespace(text)
     for c in csvsafe_trans:
         text = text.replace(c, csvsafe_trans[c])
     return text
