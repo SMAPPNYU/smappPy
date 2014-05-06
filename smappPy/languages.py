@@ -35,7 +35,7 @@ farsi = {"code":"fa","status":"production","name":"Farsi"},
 hebrew = {"code":"he","status":"production","name":"Hebrew"},
 urdu = {"code":"ur","status":"production","name":"Urdu"},
 thai = {"code":"th","status":"production","name":"Thai"},
-english_uk = {"code":"en-gb","status":"production","name":"English UK"}]
+english_uk = {"code":"en-gb","status":"production","name":"English UK"}
 
 language_dicts = [french, english, arabic, japanese, spanish, german, italian, indonesian, portuguese,
 	korean, turkish, russian, dutch, filipino, malay, chinese_tr, chinese_sm, hindi, norwegian,
