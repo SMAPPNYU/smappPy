@@ -49,13 +49,3 @@ def topic_barchart(corpus, model, topic_threshold=0.2, show=False, outfile=None,
         print "(Showing plot via matplotlib)"
         plt.show()
 
-
-
-
-
-        
-
-
-
-
-
