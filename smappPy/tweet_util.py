@@ -5,6 +5,7 @@ Utility functions for tweets
 import random
 from smappPy.date import mongodate_to_datetime
 
+ID_FIELD = "id"
 RANDOM_FIELD = "random_number"
 TIMESTAMP_FIELD = "timestamp"
 
