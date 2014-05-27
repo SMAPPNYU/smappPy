@@ -238,7 +238,7 @@ def remove_short_words(text, length=3):
 
 def remove_link_text(text):
     """Attempts to match and remove hyperlink text"""
-    text = re.sub(r"http://\S*", "", text)
+    text = re.sub(r"https?://\S*", "", text)
     return text
 
 def http_cleaner(text):
