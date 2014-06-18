@@ -50,7 +50,7 @@ def get_topic_wpl_string(model, topic_id, top_n=5):
     topic = model.show_topic(topic_id, topn=top_n)
     tstr = "Topic {0}:".format(topic_id)
     for p,word in topic:
-        tstr += "\n\t{0:.3f} {1}".format(p, word)
+        tstr += "\n\t{0:.3f} {1}".format(p, word.encode("utf8"))
     return tstr
 
 def get_topic_strings(model, num_topics=-1, top_n=5, ordered=True, wpl=False):
