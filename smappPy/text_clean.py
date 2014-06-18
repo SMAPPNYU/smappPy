@@ -32,6 +32,7 @@ punctuation_trans = {
     "=": " ",
     "/": " ",
     #"#": " ",
+    #"@": " ",
 }
 
 csvsafe_trans = {
