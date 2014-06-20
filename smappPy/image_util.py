@@ -6,7 +6,7 @@ Utilities for images
 """
 
 import urllib
-from tweetstream.entities import contains_image, get_image_urls
+from smappPy.entities import contains_image, get_image_urls
 
 class EmptyImageException(Exception):
     """Custom exception for case when image read from URL is 0 bytes/empty"""
