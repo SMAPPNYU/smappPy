@@ -63,7 +63,7 @@ def get_user_retweeted(tweet, warn=True):
         return
 
     if is_official_retweet(tweet):
-        return (tweet['retweeted_status']['user']['id_str'], tweet['retweeted_status']['user']['screen_name'])
+        return (tweet['retweeted_status']['user']['id'], tweet['retweeted_status']['user']['screen_name'])
 
     elif is_manual_retweet(tweet):
         components = split_manual_retweet(tweet)
