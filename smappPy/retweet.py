@@ -43,10 +43,12 @@ def is_partial_retweet(tweet):
         return True
     return False
 
-def get_user_retweeted(tweet):
+def get_user_retweeted(tweet, warn=True):
     """
     Given a tweet that is a retweet, return a tuple of (user ID, user screen_name) representing the
     user that is retweeted (the author of the original tweet).
+
+    Set warn parameter to False to avoid printing warning messages on passing non-RTs.
 
     Note: user ID will be None in the case of manual retweets. Always check for this.
     
@@ -56,7 +58,8 @@ def get_user_retweeted(tweet):
     import re
 
     if not is_retweet(tweet):
-        print "Warning: given tweet is not a retweet (as far as we can tell)"
+        if warn:
+            print "Warning: given tweet is not a retweet (as far as we can tell)"
         return
 
     if is_official_retweet(tweet):
