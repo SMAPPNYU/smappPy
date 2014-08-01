@@ -8,7 +8,6 @@ Relies on GENSIM objects
 """
 
 import matplotlib.pyplot as plt
-
 from collections import defaultdict
 
 def topic_sum_barchart(corpus, model, show=False, outfile=None, bar_width=0.5, trim_threshold=0.0):
@@ -27,15 +26,16 @@ def topic_sum_barchart(corpus, model, show=False, outfile=None, bar_width=0.5, t
     topic_ids = []
     topic_counts = []
 
-    for (tid, sum_p) in topic_count_dict.items():
+    for (tid, sum_p) in topic_p_dict.items():
         if sum_p >= trim_threshold:
             topic_ids.append(tid)
             topic_counts.append(sum_p)
 
     plt.bar(range(len(topic_ids)), topic_counts, width=bar_width, linewidth=0, color="blue", alpha=0.75)
     plt.xlabel("Topics")
-    plt.ylabel("Sum P over all documents (if >= {0})".format(topic_threshold))
+    plt.ylabel("Sum P over all documents (if >= {0})".format(trim_threshold))
     plt.title("Sum Topic Probability")
+    plt.tick_params(axis="x", which="both", bottom="off", top="off", labelbottom="on")
     plt.xticks(range(len(topic_ids)), topic_ids)
     plt.tight_layout()
 
@@ -45,6 +45,9 @@ def topic_sum_barchart(corpus, model, show=False, outfile=None, bar_width=0.5, t
     if show:
         print "(Showing plot via matplotlib)"
         plt.show()
+
+    plt.clf()
+    plt.close()
 
 
 def topic_occurrence_barchart(corpus, model, topic_threshold=0.2, show=False, outfile=None, bar_width=0.5, trim=True):
@@ -72,10 +75,11 @@ def topic_occurrence_barchart(corpus, model, topic_threshold=0.2, show=False, ou
             topic_ids.append(tid)
             topic_counts.append(count)
 
-    plt.bar(range(len(topic_ids)), topic_counts, width=bar_width, linewidth=0, color="red", alpha=0.75)
+    plt.bar(range(len(topic_ids)), topic_counts, width=bar_width, linewidth=0, color="red", alpha=0.75)    
     plt.xlabel("Topics")
     plt.ylabel("Occurences P >= {0}".format(topic_threshold))
     plt.title("Topic Occurrence")
+    plt.tick_params(axis="x", which="both", bottom="off", top="off", labelbottom="on")
     plt.xticks(range(len(topic_ids)), topic_ids)
     plt.tight_layout()
 
@@ -86,3 +90,5 @@ def topic_occurrence_barchart(corpus, model, topic_threshold=0.2, show=False, ou
         print "(Showing plot via matplotlib)"
         plt.show()
 
+    plt.clf()
+    plt.close()
