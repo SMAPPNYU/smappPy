@@ -4,7 +4,9 @@ Utility functions for the gensim.corpora.Dictionary object
 
 from gensim.corpora import Dictionary
 
-
+##TODO: Take min-# and max-proportion arguments, to trim dictionary
+##TODO: via gensim: 
+## d.filter_extremes(no_below=4, no_above=0.9, keep_n=MAX_TOKENS))
 def create_dictionary(doc_iterator, dict_file, as_text=False):
     """
     Creates a gensim.corpora.Dictionary object from given document iterator 
