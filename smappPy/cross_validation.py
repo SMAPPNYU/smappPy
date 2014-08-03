@@ -11,6 +11,7 @@ from sklearn.cross_validation import StratifiedShuffleSplit
 def grouped_stratified_train_test_split(y, x, group_by=None, test_size=0.33, group_labeler=None, **kwargs):
     """
     Split arrays or matrices into random training and test subsets. Subsets will contain equal proportions of each label in `y`.
+    Based on StratifiedShuffleSplit from sklearn.cross_validation.
 
     if `group_by` is an iterable of length `len(y)`, indices with the same `group_by[i]` will be kept together in either the training or the test set.
 
@@ -24,7 +25,7 @@ def grouped_stratified_train_test_split(y, x, group_by=None, test_size=0.33, gro
      y = np.array([0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1])
      id = np.array([1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6])
 
-    x_train, x_test, y_train, y_test = grouped_stratified_train_test_split(y,X,id)
+     x_train, x_test, y_train, y_test = grouped_stratified_train_test_split(y,X,id)
 
     """
 
