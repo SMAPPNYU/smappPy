@@ -7,6 +7,7 @@ SMaPP Lab @ NYU
 import numpy as np
 from random import shuffle
 from sklearn.cross_validation import StratifiedShuffleSplit
+from collections import Counter
 
 def grouped_stratified_train_test_split(y, x, group_by=None, test_size=0.33, group_labeler=None, **kwargs):
     """
@@ -52,3 +53,30 @@ def grouped_stratified_train_test_split(y, x, group_by=None, test_size=0.33, gro
     train_indices = [idx for group in train_groups for idx in group_indices[group]]
 
     return x[train_indices], x[test_indices], y[train_indices], y[test_indices]
+
+def coherence_score(x,y):
+    """
+    Compute the coherence of the sample X, Y, where some examples x_i == x_j but y_i != y_j, this will be less than 100%.
+
+    ------------
+    Example:
+
+     X = np.array([[0, 1],[0, 1],[0, 2],[0, 2],[1, 1],[1, 1]])
+     Y = np.arange(6)
+
+     coherence_score(X, Y)
+    """
+
+    # make a frozen copy of X, so that its rows can be hashable
+    x = X.copy()
+    x.flags.writeable = False
+
+    rows_labels = dict()
+    for i in range(len(x)):
+        row = x[i]
+        key = hash(row.data)
+        if not key in rows_labels:
+            rows_labels[key] = list()
+        rows_labels[key].append(y[i])
+    coherences = [Counter(labels).most_common()[0][1] / float(len(labels)) for key,labels in rows_labels.items()]
+    return np.average(coherences)
