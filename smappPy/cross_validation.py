@@ -54,7 +54,7 @@ def grouped_stratified_train_test_split(y, x, group_by=None, test_size=0.33, gro
 
     return x[train_indices], x[test_indices], y[train_indices], y[test_indices]
 
-def coherence_score(x,y):
+def coherence_score(X,y):
     """
     Compute the coherence of the sample X, Y, where some examples x_i == x_j but y_i != y_j, this will be less than 100%.
 
