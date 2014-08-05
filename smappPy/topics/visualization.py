@@ -10,13 +10,15 @@ Relies on GENSIM objects
 import matplotlib.pyplot as plt
 from collections import defaultdict
 
-def topic_sum_barchart(corpus, model, show=False, outfile=None, bar_width=0.5, trim_threshold=0.0):
+def topic_sum_barchart(corpus, model, show=False, outfile=None, bar_width=0.5, trim_threshold=0.0, normed=True):
     """
     Sums the probabilities of each topic across all documents in a corpus. Creates barcharts of sums.
     show=True runs matplotlib show.
     Specify an outfile value to save to disk as pdf
     trim_threshold allows for not displaying topics with a sum probability across all documents
     of < given value (default 0.0, ie display all topics)
+    normed=True indicates that the sum values should be normalized (averaged) over the number of docs in
+    the corpus
     """
     topic_p_dict = defaultdict(float)
     for doc in corpus:
@@ -31,10 +33,17 @@ def topic_sum_barchart(corpus, model, show=False, outfile=None, bar_width=0.5, t
             topic_ids.append(tid)
             topic_counts.append(sum_p)
 
-    plt.bar(range(len(topic_ids)), topic_counts, width=bar_width, linewidth=0, color="blue", alpha=0.75)
+    if normed:
+        num_docs = len(corpus)
+        plt.bar(range(len(topic_ids)), [sp / num_docs for sp in topic_counts], width=bar_width, linewidth=0, color="blue", alpha=0.75)
+        plt.ylabel("Normalized P over all documents (p >= {0})".format(trim_threshold))
+        plt.title("Normalized Topic Probability")
+    else:
+        plt.bar(range(len(topic_ids)), topic_counts, width=bar_width, linewidth=0, color="blue", alpha=0.75)
+        plt.ylabel("Sum P over all documents (if >= {0})".format(trim_threshold))
+        plt.title("Sum Topic Probability")
+    
     plt.xlabel("Topics")
-    plt.ylabel("Sum P over all documents (if >= {0})".format(trim_threshold))
-    plt.title("Sum Topic Probability")
     plt.tick_params(axis="x", which="both", bottom="off", top="off", labelbottom="on")
     plt.xticks(range(len(topic_ids)), topic_ids)
     plt.tight_layout()
