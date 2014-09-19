@@ -250,7 +250,7 @@ def http_cleaner(text):
     text = re.sub(r" http$", " ", text)
     return text
 
-def remove_punctuation(text):
+def translate_punctuation(text):
     """Translates some punctuation (not apostrophes) from text. Returns cleaned string"""
     for p in punctuation_trans:
         text = text.replace(p, punctuation_trans[p])
@@ -333,3 +333,19 @@ def translate_contractions(text):
     for c in contraction_trans:
         text = text.replace(c, contraction_trans[c])
     return text
+
+def remove_stopwords(text, stopwords):
+    """
+    Standard way to remove stopwords from text. Text is a string. Stopwords is
+    a list of strings to remove. Returns cleaned string.
+    """
+    text = " " + text + " "
+    for w in stopwords:
+        text = text.replace(u" {0} ".format(w.decode("utf8")), u" ")
+    return text.strip()
+
+def remove_digit_words(text):
+    """
+    Remove all space-separated substrings of only digits. Return cleaned string.
+    """
+    return " ".join([w for w in text.split() if not w.isdigit()])
