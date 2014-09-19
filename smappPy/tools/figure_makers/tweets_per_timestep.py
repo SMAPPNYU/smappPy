@@ -10,19 +10,19 @@ from datetime import datetime, timedelta
 ## Config #####################################################################
 
 start = datetime(2014,8,1,12,0)   # Time in UTC
-step_size = timedelta(days=1)     # Time step to observe (timedelta(hours=1))
-num_steps = 50                    # Number of steps to plot
+step_size = timedelta(minutes=1)     # Time step to observe (timedelta(hours=1))
+num_steps = 60                    # Number of steps to plot
 
 client = MongoClient("smapp-data.bio.nyu.edu", 27011)   # Dataserver host, port
-database = client["USLegislator"]                       # Database
+database = client["Ukraine"]                            # Database
 collection = database["tweets"]                         # Tweet collection
 database.authenticate("smapp_readOnly", "smapp_nyu")    # Auth details
 
-plot_title = "US Legislator: Tweets over time"
+plot_title = "Ukraine: Tweets per minute, 2014-08-01"
 x_label = "Time"
 y_label = "Tweets"
-transparency = 0.70
-bar_width = 0.8
+transparency = 0.70     # Bar transparency
+bar_width = 0.8         # Bar width
 x_label_step = 2        # How often to show an x-label
 
 ## End Config #################################################################

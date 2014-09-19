@@ -1,34 +1,30 @@
 # -*- coding: utf-8 -*-
-# <nbformat>3.0</nbformat>
-
-# <codecell>
-
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from seaborn import color_palette
 import matplotlib.pyplot as plt
 
-# <codecell>
-
-# Config
-start = datetime(2013, 11, 25)
+## Config #####################################################################
+start = datetime(2014, 1, 1)
 step_size = timedelta(days=1)
-num_steps = 96
+num_steps = 181
 
 client = MongoClient("smapp-data.bio.nyu.edu", 27011)
-database = client["Ukraine"]
+database = client["RandomUsers"]
 collection = database["tweets"]
 database.authenticate("smapp_readOnly", "smapp_nyu")
 
-plot_super_title = "Ukraine - Tweets per day"
-plot_sub_title = "Tweets per day during early Euromaidan protests, with event annotations"
-x_label = "Day, 11/25/2013 to 2/28/2014"
+plot_super_title = "Random User Collection - Tweets per day"
+plot_sub_title = "Tweets per day through 2014"
+x_label = "Day, 1/01/2014 (280 days)"
 transparency = 0.4
 line_width = 2.0
 line_color = "red"
-x_label_step = 5
+x_label_step = 10
 
-# List of events, event is a tuple (day number (from 0), event description, position ("top" or "bottom"))
+
+# List of events, event is a tuple (day number (from 0), event description, position 
+# ("top" or "bottom"))
 # Turkey:
 #events = [
 #    (1, "First instance of excessive force used against protesters by police", "bottom"),
@@ -37,16 +33,17 @@ x_label_step = 5
 #    (17, "Standing Man protest begins", "top"),
 #]
 # Ukraine:
-events = [
-    (5, "Protesters beaten by riot police", "top"),
-    (52, "Anti-protest law passed", "top"),
-    (55, "Hrushevskoho standoff", "top"),
-    (58, "First fatalities during protest", "top"),
-    (87, "Worst single day of violence", "bottom"),
-    (89, "Yanukovych flees", "bottom"),
-]
+# events = [
+#     (5, "Protesters beaten by riot police", "top"),
+#     (52, "Anti-protest law passed", "top"),
+#     (55, "Hrushevskoho standoff", "top"),
+#     (58, "First fatalities during protest", "top"),
+#     (87, "Worst single day of violence", "bottom"),
+#     (89, "Yanukovych flees", "bottom"),
+# ]
+events = []
+## End Config #################################################################
 
-# <codecell>
 
 # Get tweets per day
 tweets_per_day = []

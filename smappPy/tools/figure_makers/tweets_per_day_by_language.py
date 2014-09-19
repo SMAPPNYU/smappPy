@@ -31,7 +31,7 @@ bar_width = 0.8
 x_label_step = 2
 
 print_progress_every = 100000
-###############################################################################
+## End Config #################################################################
 
 # Set up language count dict
 language_counts = OrderedDict()
