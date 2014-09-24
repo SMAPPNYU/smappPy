@@ -2,13 +2,19 @@
 Tool: tweets per (day, hour, minute) figure, shown and saved optionally
 """
 
+import argparse
 import seaborn as sns
 import matplotlib.pyplot as plt
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 
-## Config #####################################################################
+## COMMANDLINE ################################################################
+parser = argparse.ArgumentParser()
+parser.add_argument("-u", "--user", default="smapp_readOnly")
+parser.add_argument("-w", "--password", required=True)
+args = parser.parse_args()
 
+## CONFIG #####################################################################
 start = datetime(2014,8,1,12,0)   # Time in UTC
 step_size = timedelta(minutes=1)     # Time step to observe (timedelta(hours=1))
 num_steps = 60                    # Number of steps to plot
@@ -16,7 +22,6 @@ num_steps = 60                    # Number of steps to plot
 client = MongoClient("smapp-data.bio.nyu.edu", 27011)   # Dataserver host, port
 database = client["Ukraine"]                            # Database
 collection = database["tweets"]                         # Tweet collection
-database.authenticate("smapp_readOnly", "smapp_nyu")    # Auth details
 
 plot_title = "Ukraine: Tweets per minute, 2014-08-01"
 x_label = "Time"
@@ -25,7 +30,12 @@ transparency = 0.70     # Bar transparency
 bar_width = 0.8         # Bar width
 x_label_step = 2        # How often to show an x-label
 
-## End Config #################################################################
+## MAIN #######################################################################
+
+# Auth to DB
+if not database.authenticate(args.user, args.password):
+  raise Exception("DB authentication failed")
+
 
 times = [start + (i * step_size) for i in range(num_steps)]
 counts = []

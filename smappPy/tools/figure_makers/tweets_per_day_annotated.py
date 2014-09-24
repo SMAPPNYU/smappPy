@@ -1,8 +1,18 @@
-# -*- coding: utf-8 -*-
+"""
+Script to plot tweets per day with vertical annotation lines
+"""
+
+import argparse
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from seaborn import color_palette
 import matplotlib.pyplot as plt
+
+## COMMANDLINE ################################################################
+parser = argparse.ArgumentParser()
+parser.add_argument("-u", "--user", default="smapp_readOnly")
+parser.add_argument("-w", "--password", required=True)
+args = parser.parse_args()
 
 ## Config #####################################################################
 start = datetime(2014, 1, 1)
@@ -12,7 +22,6 @@ num_steps = 181
 client = MongoClient("smapp-data.bio.nyu.edu", 27011)
 database = client["RandomUsers"]
 collection = database["tweets"]
-database.authenticate("smapp_readOnly", "smapp_nyu")
 
 plot_super_title = "Random User Collection - Tweets per day"
 plot_sub_title = "Tweets per day through 2014"
@@ -22,16 +31,15 @@ line_width = 2.0
 line_color = "red"
 x_label_step = 10
 
-
 # List of events, event is a tuple (day number (from 0), event description, position 
 # ("top" or "bottom"))
 # Turkey:
-#events = [
+# events = [
 #    (1, "First instance of excessive force used against protesters by police", "bottom"),
 #    (11, "Police begin to clear the square", "top"),
 #    (15, "Police clear Gezi Park", "top"),
 #    (17, "Standing Man protest begins", "top"),
-#]
+# ]
 # Ukraine:
 # events = [
 #     (5, "Protesters beaten by riot police", "top"),
@@ -41,9 +49,14 @@ x_label_step = 10
 #     (87, "Worst single day of violence", "bottom"),
 #     (89, "Yanukovych flees", "bottom"),
 # ]
+# Blank (no events):
 events = []
-## End Config #################################################################
 
+## MAIN #######################################################################
+
+# Authenticate to DB
+if not database.authenticate(args.user, args.password):
+    raise Exception("DB authentication failed")
 
 # Get tweets per day
 tweets_per_day = []
@@ -54,8 +67,7 @@ for step in range(num_steps):
     tweets_per_day.append(total)
     print "{0}: {1} - {2}: {3}".format(step, query_start, query_start + step_size, total)
 
-# <codecell>
-
+# Plot
 plt.plot(range(num_steps), tweets_per_day, alpha=transparency, linewidth=line_width, color=line_color)
 
 ymin, ymax = plt.ylim()
@@ -65,8 +77,6 @@ for e in events:
         plt.text(e[0] + 0.2, ymin + (0.05 * ymax), e[1], rotation=-90, verticalalignment="bottom")
     else:
         plt.text(e[0] + 0.2, ymax - (0.05 * ymax), e[1], rotation=-90, verticalalignment="top")
-    
-    
 
 plt.xlim(0, num_steps-1)
 plt.xlabel(x_label)
@@ -78,4 +88,3 @@ plt.xticks(range(num_steps)[::x_label_step],
            ["{0}-{1}-{2}".format(d.year, d.month, d.day) for d in [start + (i * step_size) for i in range(num_steps)[::x_label_step]]],
            rotation=55)
 plt.show()
-
