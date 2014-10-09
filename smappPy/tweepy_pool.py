@@ -64,6 +64,9 @@ class APIPool(object):
             if type(e.message) == list and e.message[0]['code'] == RATE_LIMIT_ERROR:
                 api_struct[1][method_name] = now
                 return self._call_with_throttling_per_method(method_name, *args, **kwargs)
+            elif type(e.message) == unicode: and json.loads(e.message)['errors'][0]['code'] == RATE_LIMIT_ERROR:
+                api_struct[1][method_name] = now
+                return self._call_with_throttling_per_method(method_name, *args, **kwargs)
             else:
                 raise e
 
