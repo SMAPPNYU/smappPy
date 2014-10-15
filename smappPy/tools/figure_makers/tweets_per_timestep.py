@@ -15,20 +15,20 @@ parser.add_argument("-w", "--password", required=True)
 args = parser.parse_args()
 
 ## CONFIG #####################################################################
-start = datetime(2014,8,1,12,0)   # Time in UTC
-step_size = timedelta(minutes=1)     # Time step to observe (timedelta(hours=1))
-num_steps = 60                    # Number of steps to plot
+start = datetime(2010,1,1)   # Time in UTC
+step_size = timedelta(days=10)     # Time step to observe (timedelta(hours=1))
+num_steps = 200                    # Number of steps to plot
 
 client = MongoClient("smapp-data.bio.nyu.edu", 27011)   # Dataserver host, port
-database = client["Ukraine"]                            # Database
+database = client["USLegislator"]                            # Database
 collection = database["tweets"]                         # Tweet collection
 
-plot_title = "Ukraine: Tweets per minute, 2014-08-01"
+plot_title = "USLEG: Tweets per 10-day"
 x_label = "Time"
 y_label = "Tweets"
 transparency = 0.70     # Bar transparency
 bar_width = 0.8         # Bar width
-x_label_step = 2        # How often to show an x-label
+x_label_step = 5        # How often to show an x-label
 
 ## MAIN #######################################################################
 
