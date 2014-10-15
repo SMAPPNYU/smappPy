@@ -3,11 +3,18 @@ A script to create TPD figures in bars stacked by language. All configuration is
 internal, beneath the "Config" comment
 """
 
+import argparse
 from pymongo import MongoClient
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from seaborn import color_palette
 import matplotlib.pyplot as plt
+
+## COMMANDLINE ################################################################
+parser = argparse.ArgumentParser()
+parser.add_argument("-u", "--user", default="smapp_readOnly")
+parser.add_argument("-w", "--password", required=True)
+args = parser.parse_args()
 
 ## Config #####################################################################
 start = datetime(2013, 5, 31)
@@ -17,7 +24,6 @@ num_steps = 31
 client = MongoClient("smapp-data.bio.nyu.edu", 27011)
 database = client["TurkeyParkProtests"]
 collection = database["tweets"]
-database.authenticate("smapp_readOnly", "smapp_nyu")
 
 languages = ["tr", "en", "other"]
 language_colors = ["red", "royalblue", "grey"]
@@ -31,7 +37,12 @@ bar_width = 0.8
 x_label_step = 2
 
 print_progress_every = 100000
-## End Config #################################################################
+
+## MAIN #######################################################################
+
+# Auth to DB
+if not database.authenticate(args.user, args.password):
+    raise Exception("DB authentication failed")
 
 # Set up language count dict
 language_counts = OrderedDict()
@@ -98,4 +109,3 @@ plt.xticks(range(num_steps)[::x_label_step],
            ["{0}-{1}-{2}".format(d.year, d.month, d.day) for d in [start + (i * step_size) for i in range(num_steps)][::x_label_step]],
            rotation=55)
 plt.show()
-
