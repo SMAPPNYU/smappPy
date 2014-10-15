@@ -53,10 +53,10 @@ def log_loss(actual, predicted, epsilon=1e-15):
     that something is true or false with a probability (likelihood) ranging from 
     definitely true (1) to equally true (0.5) to definitely false(0).
     """
-    pred = sp.maximum(epsilon, pred)
-    pred = sp.minimum(1-epsilon, pred)
-    ll = sum(act*sp.log(pred) + sp.subtract(1,act)*sp.log(sp.subtract(1,pred)))
-    ll = ll * -1.0/len(act)
+    predicted = sp.maximum(epsilon, predicted)
+    predicted = sp.minimum(1-epsilon, predicted)
+    ll = sum(actual*sp.log(predicted) + sp.subtract(1,actual)*sp.log(sp.subtract(1,predicted)))
+    ll = ll * -1.0/len(actual)
     return ll
 
 
