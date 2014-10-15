@@ -6,6 +6,7 @@ Math functions useful for smapp tasks
 """
 
 import numpy as np
+import scipy as sp
 
 def kl_divergence(p,q):
     """
@@ -40,3 +41,22 @@ def js_distance(p, q):
     Parameters p and q must be array-like objects (numpy arrays).
     """
     return np.sqrt(js_divergence(p,q))
+
+def log_loss(actual, predicted, epsilon=1e-15):
+    """
+    Calculates and returns the log loss (error) of a set of predicted probabilities
+    (hint: see sklearn classifier's predict_proba methods).
+
+    Source: https://www.kaggle.com/wiki/LogarithmicLoss
+    
+    In plain English, this error metric is typically used where you have to predict 
+    that something is true or false with a probability (likelihood) ranging from 
+    definitely true (1) to equally true (0.5) to definitely false(0).
+    """
+    pred = sp.maximum(epsilon, pred)
+    pred = sp.minimum(1-epsilon, pred)
+    ll = sum(act*sp.log(pred) + sp.subtract(1,act)*sp.log(sp.subtract(1,pred)))
+    ll = ll * -1.0/len(act)
+    return ll
+
+
