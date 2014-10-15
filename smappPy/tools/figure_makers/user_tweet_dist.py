@@ -5,7 +5,7 @@ Plot distribution of user tweets in a configured time range
 import seaborn as sb
 from pymongo import MongoClient
 from collections import defaultdict
-from matplotlib.pyplot import plot as plt
+import matplotlib.pyplot as plt
 from datetime import datetime
 
 #TODO: MAKE ARGPARSE GO
