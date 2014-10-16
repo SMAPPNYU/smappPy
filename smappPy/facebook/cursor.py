@@ -34,21 +34,24 @@ class TimeBasedPaginationCursor:
         Returns all items from all subsequent pages fitting the since criterium.
         """
         data = list()
-        response = self.response
-        latest_timestamp_in_response = self._unix_timestamp_from_isoformat_string(response['data'][0]['created_time'])
+        response_json = self.response
+        if len(response_json['data']) < 1:
+            return data
+        latest_timestamp_in_response = self._unix_timestamp_from_isoformat_string(response_json['data'][0]['created_time'])
         while latest_timestamp_in_response > self.since:
-            data_in_range = [d for d in response['data']
+            data_in_range = [d for d in response_json['data']
                 if self._unix_timestamp_from_isoformat_string(d['created_time']) > self.since]
             data += data_in_range
-            if len(data_in_range) < len(response['data']):
+            if len(data_in_range) < len(response_json['data']):
                 break
             if self.debug:
-                print("TimeBasedPaginationCursor: requesting: {}".format(response['paging']['next']))
+                print("TimeBasedPaginationCursor: requesting: {}".format(response_json['paging']['next']))
 
             i = 0
             while i < self.num_retries:
-                response = requests.get(response['paging']['next']).json()
+                response = requests.get(response_json['paging']['next'])
                 if response.ok:
+                    response_json = response.json()
                     break
                 else:
                     if self.debug:
@@ -58,7 +61,9 @@ class TimeBasedPaginationCursor:
                         print("retrying..{}".format(i))
                 i += 1
 
-            if response.ok:
-                latest_timestamp_in_response = self._unix_timestamp_from_isoformat_string(response['data'][0]['created_time'])
+            if response.ok and 'data' in response_json and len(response_json['data'])>1:
+                latest_timestamp_in_response = self._unix_timestamp_from_isoformat_string(response_json['data'][0]['created_time'])
+            else:
+                break
         return data
 
