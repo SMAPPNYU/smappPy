@@ -9,7 +9,7 @@ from random import shuffle
 from sklearn.cross_validation import StratifiedShuffleSplit
 from collections import Counter
 
-def grouped_stratified_train_test_split(y, x, group_by=None, test_size=0.33, group_labeler=None, **kwargs):
+def grouped_stratified_train_test_split(y, x, group_by=None, test_size=0.33, group_labeler=None, return_indices=False, **kwargs):
     """
     Split arrays or matrices into random training and test subsets. Subsets will contain equal proportions of each label in `y`.
     Based on StratifiedShuffleSplit from sklearn.cross_validation.
@@ -51,8 +51,10 @@ def grouped_stratified_train_test_split(y, x, group_by=None, test_size=0.33, gro
 
     test_indices = [idx for group in test_groups for idx in group_indices[group]]
     train_indices = [idx for group in train_groups for idx in group_indices[group]]
-
-    return x[train_indices], x[test_indices], y[train_indices], y[test_indices]
+    if return_indices:
+        return train_indices, test_indices
+    else:
+        return x[train_indices], x[test_indices], y[train_indices], y[test_indices]
 
 def coherence_score(X,y):
     """
