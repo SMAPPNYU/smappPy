@@ -20,10 +20,11 @@ class TimeBasedPaginationCursor:
     c = TimeBasedPaginationCursor(first_page, since=xxxx)
     all_posts = c.items()
     """
-    def __init__(self, response, since=0, debug=False):
+    def __init__(self, response, since=0, debug=False, num_retries=10):
         self.response = response
         self.since = since
-        self.debug=debug
+        self.debug = debug
+        self.num_retries = num_retries
 
     def _unix_timestamp_from_isoformat_string(self, timestring):
         return calendar.timegm(parser.parse(timestring).timetuple())
@@ -43,9 +44,21 @@ class TimeBasedPaginationCursor:
                 break
             if self.debug:
                 print("TimeBasedPaginationCursor: requesting: {}".format(response['paging']['next']))
-            response = requests.get(response['paging']['next']).json()
-            if 'data' not in response or len(response['data']) < 1:
-                break
-            latest_timestamp_in_response = self._unix_timestamp_from_isoformat_string(response['data'][0]['created_time'])
+
+            i = 0
+            while i < self.num_retries:
+                response = requests.get(response['paging']['next']).json()
+                if response.ok:
+                    break
+                else:
+                    if self.debug:
+                        print("Error:")
+                        print(response)
+                        print(response.text)
+                        print("retrying..{}".format(i))
+                i += 1
+
+            if response.ok:
+                latest_timestamp_in_response = self._unix_timestamp_from_isoformat_string(response['data'][0]['created_time'])
         return data
 
