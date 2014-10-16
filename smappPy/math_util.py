@@ -52,6 +52,9 @@ def log_loss(actual, predicted, epsilon=1e-15):
     In plain English, this error metric is typically used where you have to predict 
     that something is true or false with a probability (likelihood) ranging from 
     definitely true (1) to equally true (0.5) to definitely false(0).
+
+    Note: also see (and use) scikitlearn: 
+    http://scikit-learn.org/stable/modules/generated/sklearn.metrics.log_loss.html#sklearn.metrics.log_loss
     """
     predicted = sp.maximum(epsilon, predicted)
     predicted = sp.minimum(1-epsilon, predicted)
