@@ -20,7 +20,7 @@ class TimeBasedPaginationCursor:
     c = TimeBasedPaginationCursor(first_page, since=xxxx)
     all_posts = c.items()
     """
-    def __init__(self, response, since):
+    def __init__(self, response, since=0):
         self.response = response
         self.since = since
 
