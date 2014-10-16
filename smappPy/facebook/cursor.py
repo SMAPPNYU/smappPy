@@ -20,9 +20,10 @@ class TimeBasedPaginationCursor:
     c = TimeBasedPaginationCursor(first_page, since=xxxx)
     all_posts = c.items()
     """
-    def __init__(self, response, since=0):
+    def __init__(self, response, since=0, debug=False):
         self.response = response
         self.since = since
+        self.debug=debug
 
     def _unix_timestamp_from_isoformat_string(self, timestring):
         return calendar.timegm(parser.parse(timestring).timetuple())
@@ -40,8 +41,10 @@ class TimeBasedPaginationCursor:
             data += data_in_range
             if len(data_in_range) < len(response['data']):
                 break
+            if self.debug:
+                print("TimeBasedPaginationCursor: requesting: {}".format(response['paging']['next']))
             response = requests.get(response['paging']['next']).json()
-            if len(response['data']) < 1:
+            if 'data' not in response or len(response['data']) < 1:
                 break
             latest_timestamp_in_response = self._unix_timestamp_from_isoformat_string(response['data'][0]['created_time'])
         return data
