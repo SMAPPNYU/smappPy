@@ -2,68 +2,79 @@
 Cursors for easier pagination using the facebook-sdk library
 """
 
+import time
+import logging
 import calendar
 import requests
 from dateutil import parser
 
-class TimeBasedPaginationCursor:
+def _call_with_retries(method, *args, **kwargs):
     """
-    Cursor for handling Facebook GraphAPI Time-based paged items (such as posts).
-    Time-based pagination works backwards:
-      - the first page hit will contain the newest posts
-      - the 'next' page is the chronologically previous page (older posts)
+    Call graph API method with `n_retries` retries, waiting `t_wait` seconds
+    between each call.
+    If the call still fails after `n_retries`, raises whatever exception.
 
-
-    Example:
-    --------
-    first_page = graph.get_connections('user-alias', 'posts', since=xxxx, until=yyyy)
-    c = TimeBasedPaginationCursor(first_page, since=xxxx)
-    all_posts = c.items()
+    Usage example:
+    _call_with_retries(graph.get_connections('me', 'posts'), since=0, until=12345, n_retries=3, t_wait=0.5,)
     """
-    def __init__(self, response, since=0, debug=False, num_retries=10):
-        self.response = response
-        self.since = since
-        self.debug = debug
-        self.num_retries = num_retries
+    n_retries = kwargs.pop('n_retries', 10)
+    t_wait    = kwargs.pop('t_wait', 1)
 
-    def _unix_timestamp_from_isoformat_string(self, timestring):
-        return calendar.timegm(parser.parse(timestring).timetuple())
+    for trial in range(n_retries):
+        try:
+            return method(*args, **kwargs)
+        except Exception as e:
+            logging.warn(e)
+        time.sleep(t_wait)
+    raise e
 
-    def items(self):
-        """
-        Returns all items from all subsequent pages fitting the since criterium.
-        """
-        data = list()
-        response_json = self.response
-        if len(response_json['data']) < 1:
-            return data
-        latest_timestamp_in_response = self._unix_timestamp_from_isoformat_string(response_json['data'][0]['created_time'])
-        while latest_timestamp_in_response > self.since:
-            data_in_range = [d for d in response_json['data']
-                if self._unix_timestamp_from_isoformat_string(d['created_time']) > self.since]
-            data += data_in_range
-            if len(data_in_range) < len(response_json['data']):
-                break
-            if self.debug:
-                print("TimeBasedPaginationCursor: requesting: {}".format(response_json['paging']['next']))
+def _grab_next_page(page):
+    """
+    `page` is a facebook graph result page, so it has a key 'paging' where
+    'next' is an http link to the next page, with all neccesary params
 
-            i = 0
-            while i < self.num_retries:
-                response = requests.get(response_json['paging']['next'])
-                if response.ok:
-                    response_json = response.json()
-                    break
-                else:
-                    if self.debug:
-                        print("Error:")
-                        print(response)
-                        print(response.text)
-                        print("retrying..{}".format(i))
-                i += 1
+    This method calls that next page, and raises an exception if the response is
+    not 200.
 
-            if response.ok and 'data' in response_json and len(response_json['data'])>1:
-                latest_timestamp_in_response = self._unix_timestamp_from_isoformat_string(response_json['data'][0]['created_time'])
-            else:
-                break
-        return data
+    If ok, returns JSON.
+    """
+    response = requests.get(page['paging']['next'])
+    if not response.ok:
+        raise Exception(response.status_code, response.text)
+    return response.json()
 
+def _unix_timestamp_from_isoformat_string(timestring):
+    return calendar.timegm(parser.parse(timestring).timetuple())
+
+
+def _object_created_since(since):
+    def checker(o):
+        return _unix_timestamp_from_isoformat_string(o['created_time']) >= since
+    return checker
+
+class Cursor:
+    """
+    Base class for cursoring through facebook's graph's paged things.
+    """
+    def __init__(self, method, *args, **kwargs):
+        self._method = method
+        self._args = args
+        self._kwargs = kwargs
+
+        if 'since' in kwargs:
+            self._continue_criterion = _object_created_since(kwargs['since'])
+        else:
+            self._continue_criterion = lambda: True
+
+    def __iter__(self):
+        self.current = _call_with_retries(self._method, *self._args, **self._kwargs)
+        return self
+
+    def next(self):
+        if len(self.current['data']) < 1:
+            self.current = _call_with_retries(_grab_next_page, self.current)
+            if len(self.current['data']) < 1:
+                raise StopIteration
+        if self._continue_criterion(self.current['data'][0]):
+            return self.current['data'].pop(0)
+        raise StopIteration
