@@ -61,8 +61,13 @@ class Cursor:
         self._args = args
         self._kwargs = kwargs
 
+        # Currently only supports time-based pagination
         if 'since' in kwargs:
             self._continue_criterion = _object_created_since(kwargs['since'])
+        elif 'before' in kwargs or 'after' in kwargs:
+            raise NotImplementedError('cursor-based paging not implemented')
+        elif 'offset' in kwargs:
+            raise NotImplementedError('offset-based paging not implemented')
         else:
             self._continue_criterion = lambda o: True
 
