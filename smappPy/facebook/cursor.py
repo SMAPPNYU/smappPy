@@ -64,7 +64,7 @@ class Cursor:
         if 'since' in kwargs:
             self._continue_criterion = _object_created_since(kwargs['since'])
         else:
-            self._continue_criterion = lambda: True
+            self._continue_criterion = lambda o: True
 
     def __iter__(self):
         self.current = _call_with_retries(self._method, *self._args, **self._kwargs)
