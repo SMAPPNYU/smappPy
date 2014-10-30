@@ -17,9 +17,25 @@ GeoBox_Turkey = [25.90, 35.17, 44.70, 41.77]
 #GeoBox_Russia = []
 #GeoBox_Australia = []
 
-GeoBox_NewYork = [-74, 40, -73, 41]
-GeoBox_SanFrancisco = [-122.75, 36.8, -121.75, 37.8] 
+GeoBox_SanFrancisco = [-122.758957382,36.8016310945,-121.751689668,38.0550529401] 
 GeoBox_Istanbul = [28.80, 40.80, 29.30, 41.20]
+
+# US Top 10 cities from different states (2013 census)
+GeoBox_NewYork = [-74.1272539625,40.4601834953,-73.7496098766,40.9238351317]
+GeoBox_LosAngeles = [-118.6938389766,33.4543809893,-117.3703715656,34.2779630492]
+GeoBox_Chicago = [-87.9402669,41.5991645815,-87.4594993223,42.023131]
+GeoBox_Houston = [-95.7880869,29.523624,-95.014496,30.1107319]
+GeoBox_Philadelphia = [-75.280303,39.8670041,-74.9557629,40.1379919]
+GeoBox_Phoenix = [-112.4449056094,33.1985349519,-111.6033226113,33.8770957331]
+GeoBox_Indianapolos = [-86.3281211,39.632177,-85.9373789,39.927392]
+GeoBox_Jacksonville = [-81.8929466242,30.103748,-81.3950931,30.586232]
+GeoBox_Columbus = [-83.2102799,39.808631,-82.7713781,40.1572719]
+GeoBox_Charlotte = [-81.0089479,35.0131739,-80.6131124229,35.393133]
+
+USTopTen_DiftStates = [GeoBox_NewYork, GeoBox_LosAngeles, GeoBox_Chicago,
+    GeoBox_Houston, GeoBox_Philadelphia, GeoBox_Phoenix, GeoBox_Indianapolos, 
+    GeoBox_Jacksonville, GeoBox_Columbus, GeoBox_Charlotte]
+
 
 ContinentCode = {
     -1: "Unknown",
