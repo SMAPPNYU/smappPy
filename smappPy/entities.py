@@ -51,6 +51,22 @@ symbols:
 """
 
 # General functions
+def contains_entities(tweet):
+    """
+    Returns True if tweet contains one or more entities (hashtag, url, or media)
+    """
+    if "entities" not in tweet:
+        return False
+    if "hashtags" in tweet["entities"] and len(tweet["entities"]["hashtags"]) > 0:
+        return True
+    if "media" in tweet["entities"] and len(tweet["entities"]["media"]) > 0:
+        return True
+    if "urls" in tweet["entities"] and len(tweet["entities"]["urls"]) > 0:
+        return True
+    if "user_mentions" in tweet["entities"] and len(tweet["entities"]["user_mentions"]) > 0:
+        return True
+    return False
+
 def remove_entities_from_text(tweet, text=None, remove_hashtags=True, remove_mentions=True):
     """
     Removes all entity text from tweets using entity indices, not text matching.
