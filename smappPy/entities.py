@@ -156,7 +156,15 @@ def get_hashtags(tweet):
     return [h["text"] for h in tweet["entities"]["hashtags"]]
 
 
-# LINK functions
+# URL and Link functions
+def contains_url(tweet):
+    """Returns True is tweet has at least one 'urls' entity"""
+    if "entities" not in tweet:
+        return False
+    if "urls" in tweet["entities"] and len(tweet["entities"]["urls"]) > 0:
+        return True
+    return False
+
 def contains_link(tweet):
     """Returns true if tweet contains link (URL or Media). Checks entities"""
     if "entities" not in tweet:
@@ -181,6 +189,14 @@ def num_links(tweet):
 
 
 # MEDIA (and image) functions
+def contains_media(tweet):
+    """Returns True if tweet entities has at least one media entry"""
+    if "entities" not in tweet:
+        return False
+    if "media" in tweet["entities"] and len(tweet["entities"]["media"]) > 0:
+        return True
+    return False
+
 def contains_image(tweet):
     """Takes a python-native tweet (dict), returns True if tweet contains an image"""
     if "entities" not in tweet:
