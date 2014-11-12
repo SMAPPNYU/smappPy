@@ -58,10 +58,11 @@ def is_geocoded(tweet):
     """
     Returns True if tweet is geocoded. Tweet is a tweet-dict.
     """
-    if "coordinates" not in tweet or tweet["coordinates"] == None:
-        return False
-    else:
+    if "coordinates" in tweet and tweet["coordinates"]:
         return True
+    elif "geo" in tweet and tweet["geo"]:
+        return True
+    return False
 
 
 def get_coordinates(tweet):
@@ -71,7 +72,10 @@ def get_coordinates(tweet):
     """
     if not is_geocoded(tweet):
         return []
-    return tweet["coordinates"]["coordinates"]
+    if "coordinates" in tweet:
+        return tweet["coordinates"]["coordinates"]
+    else:
+        return tweet["geo"]["coordinates"]
 
 
 def get_tweet_region(tweet, regions=[GeoBox_NorthAmerica, 
