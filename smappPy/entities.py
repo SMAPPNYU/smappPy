@@ -119,9 +119,9 @@ def contains_mention(tweet):
 
 def num_mentions(tweet):
     """Returns (int) number of mentions in tweet"""
-    if not contains_mention(tweet):
-        return 0
-    return len(tweet["entities"]["user_mentions"])
+    if contains_mention(tweet):
+        return len(tweet["entities"]["user_mentions"])
+    return 0
 
 def get_users_mentioned(tweet):
     """
@@ -145,15 +145,15 @@ def contains_hashtag(tweet):
 
 def num_hashtags(tweet):
     """Returns number of hashtags in a tweet"""
-    if not contains_hashtag(tweet):
-        return 0
-    return len(tweet["entities"]["hashtags"])
+    if contains_hashtag(tweet):
+        return len(tweet["entities"]["hashtags"])
+    return 0
 
 def get_hashtags(tweet):
     """Returns all tweet hashtags as a list of strings (WITHOUT the '#' char)"""
-    if not contains_hashtag(tweet):
-        return []
-    return [h["text"] for h in tweet["entities"]["hashtags"]]
+    if contains_hashtag(tweet):
+        return [h["text"] for h in tweet["entities"]["hashtags"]]
+    return []
 
 
 # URL and Link functions
@@ -164,6 +164,12 @@ def contains_url(tweet):
     if "urls" in tweet["entities"] and len(tweet["entities"]["urls"]) > 0:
         return True
     return False
+
+def num_urls(tweet):
+    """Returns number of URLs in tweet - entities urls field"""
+    if contains_url(tweet):
+        return len(tweet["entities"]["urls"])
+    return 0
 
 def contains_link(tweet):
     """Returns true if tweet contains link (URL or Media). Checks entities"""
@@ -196,6 +202,12 @@ def contains_media(tweet):
     if "media" in tweet["entities"] and len(tweet["entities"]["media"]) > 0:
         return True
     return False
+
+def num_media(tweet):
+    """Returns number of media entity elements in tweet"""
+    if contains_media(tweet):
+        return len(tweet["entities"]["media"])
+    return 0
 
 def contains_image(tweet):
     """Takes a python-native tweet (dict), returns True if tweet contains an image"""
