@@ -18,6 +18,11 @@ def field_contains(tweet, field, *terms):
     `field` may also be a path to a nested attribute, for instance:
         field_contains(tweet, 'user.screen_name', 'bob', 'alice')
         # will return True for usernames with bob or alice in them.
+
+    Example:
+    ========
+    field_contains(tweet, 'user.screen_name', 'obama', 'putin')
+    # true if the user's handle contains 'obama' or 'putin'
     """
     path = field.split('.')
     value = tweet[path.pop(0)]
