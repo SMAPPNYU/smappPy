@@ -51,23 +51,22 @@ def within_geobox(tweet, sw_lon, sw_lat, ne_lon, ne_lat):
 
     Example:
     ========
-    from smappPy.geo_tweet import GeoBox_Philadelphia
-    within_geobox(tweet, *GeoBox_Philadelphia)
-    # true for tweets tweeted within a box surrounding philly
+    within_geobox(tweet, -75.280303,39.8670041,-74.9557629,40.1379919)
+    # true for tweets tweeted within a box surrounding Philadelphia
     """
     if 'coordinates' not in tweet or 'coordinates' not in tweet['coordinates']:
         return False
     coords = tweet['coordinates']['coordinates']
     return coords[0] > float(sw_lon) and coords[0] < float(ne_lon) and coords[1] > float(sw_lat) and coords[1] < float(ne_lat)
 
-def place_contains(tweet, *terms):
+def place_name_contains(tweet, *terms):
     """
     True if the `place` associated with the tweet contains any of the terms
     For more information about `place see https://dev.twitter.com/overview/api/places
 
     Example:
     ========
-    place_contains(tweet, 'Kiev')
+    place_name_contains(tweet, 'Kiev')
     # true for tweets where tweet['place']['full_name'] contains 'kiev'.
     """
     if 'place' not in tweet or tweet['place'] is None:
