@@ -53,7 +53,7 @@ def within_geobox(tweet, sw_lon, sw_lat, ne_lon, ne_lat):
     if 'coordinates' not in tweet or 'coordinates' not in tweet['coordinates']:
         return False
     coords = tweet['coordinates']['coordinates']
-    return coords[0] > sw_lon and coords[0] < ne_lon and coords[1] > sw_lat and coords[1] < ne_lat
+    return coords[0] > float(sw_lon) and coords[0] < float(ne_lon) and coords[1] > float(sw_lat) and coords[1] < float(ne_lat)
 
 def place_contains(tweet, *terms):
     """
