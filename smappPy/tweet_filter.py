@@ -21,21 +21,22 @@ def field_contains(tweet, field, *terms):
     """
     path = field.split('.')
     value = tweet[path.pop(0)]
-    for p in path[1:]:
+    for p in path:
         value = value[p]
-    return any(term in value for term in terms)
+    value = value.lower()
+    return any(term.lower() in value for term in terms)
 
 def user_location_contains(tweet, *terms):
     """
     True if tweet['user']['location'] contains any of the terms.
     """
-    return field_contains('user.location', *terms)
+    return field_contains(tweet, 'user.location', *terms)
 
 def user_description_contains(tweet, *terms):
     """
     True if tweet['user']['description'] contains any of the terms.
     """
-    return field_contains('user.description', *terms)
+    return field_contains(tweet, 'user.description', *terms)
 
 def within_geobox(tweet, sw_lon, sw_lat, ne_lon, ne_lat):
     """
@@ -53,3 +54,17 @@ def within_geobox(tweet, sw_lon, sw_lat, ne_lon, ne_lat):
         return False
     coords = tweet['coordinates']['coordinates']
     return coords[0] > sw_lon and coords[0] < ne_lon and coords[1] > sw_lat and coords[1] < ne_lat
+
+def place_contains(tweet, *terms):
+    """
+    True if the `place` associated with the tweet contains any of the terms
+    For more information about `place see https://dev.twitter.com/overview/api/places
+
+    Example:
+    ========
+    place_contains(tweet, 'Kiev')
+    # true for tweets where tweet['place']['full_name'] contains 'kiev'.
+    """
+    if 'place' not in tweet or tweet['place'] is None:
+        return False
+    return field_contains(tweet, 'place.full_name', *terms)
