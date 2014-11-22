@@ -25,7 +25,7 @@ def field_contains(tweet, field, *terms):
     # true if the user's handle contains 'obama' or 'putin'
     """
     path = field.split('.')
-    value = tweet[path.pop(0)]
+    value = tweet
     for p in path:
         value = value[p]
     value = value.lower()
@@ -71,4 +71,4 @@ def place_name_contains(tweet, *terms):
     """
     if 'place' not in tweet or tweet['place'] is None:
         return False
-    return field_contains(tweet, 'place.full_name', *terms)
+    return field_contains(tweet, 'place.full_name', *terms) or field_contains(tweet, 'place.country', *terms)
