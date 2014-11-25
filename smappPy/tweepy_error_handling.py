@@ -15,6 +15,7 @@ def call_with_error_handling(function, *args, **kwargs):
         1   - Unknown Twitter error
         2   - HTTPLib incomplete read error
         3   - SSL Read timeout error
+        4   - ValeError (eg: "No JSON object could be decoded")
     """
     #TODO: Extend to consider as many twitter error codes as you have patience for
     #TODO: (https://dev.twitter.com/docs/error-codes-responses)
@@ -43,5 +44,8 @@ def call_with_error_handling(function, *args, **kwargs):
     except SSLError as s:
         print ".. SSL read timeout error: {0}".format(s)
         return (None, 3)
+    except ValueError as v:
+        print ".. Value error (most likely JSON problem): {0}".format(v)
+        return (None, 4)
 
     return (ret, 0)
