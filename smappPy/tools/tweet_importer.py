@@ -34,7 +34,7 @@ def import_tweets(host, port, user, password, database, collection, infile, tran
 
     # Ensure there is a unique ID index on tweet collection
     print "Ensuring indexes on {0}:{1}".format(database, collection)
-    col.ensure_index("id_str", name="unique_id", unique=True, drop_dups=True, background=True)
+    col.ensure_index("id", name="unique_id", unique=True, drop_dups=True, background=True)
 
     # Read tweets via the Custom json decoder (made for reading streams with multiple tweets)
     print "Importing tweets in {0}".format(infile)
