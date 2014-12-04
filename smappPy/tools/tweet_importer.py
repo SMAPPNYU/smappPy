@@ -84,4 +84,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     for filename in args.file:
-        import_tweets(args.host, args.port, args.user, args.password, args.db, args.collection, filenamefile)
+        import_tweets(args.host, args.port, args.user, args.password, args.db, args.collection, filename)
