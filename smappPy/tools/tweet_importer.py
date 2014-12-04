@@ -91,4 +91,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     for filename in args.file:
-        import_tweets(args.host, args.port, args.user, args.password, args.db, args.collection, filename, args.stream_json)
+        import_tweets(args.host, args.port, args.user, args.password, args.db, args.collection, filename, stream_json=args.stream_json)
