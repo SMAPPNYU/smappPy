@@ -79,8 +79,9 @@ if __name__ == "__main__":
         help="Database name on database server")
     parser.add_argument("-c", "--collection", action="store", dest="collection", required=True,
         help="Collection in database")
-    parser.add_argument("-f", "--file", action="store", dest="file", required=True,
+    parser.add_argument("-f", "--file", action="store", dest="file", required=True, nargs='*',
         help="File to read input from")
 
     args = parser.parse_args()
-    import_tweets(args.host, args.port, args.user, args.password, args.db, args.collection, args.file)
+    for filename in args.file:
+        import_tweets(args.host, args.port, args.user, args.password, args.db, args.collection, filenamefile)
