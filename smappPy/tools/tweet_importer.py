@@ -43,6 +43,7 @@ def import_tweets(host, port, user, password, database, collection, infile, tran
     with open(infile) as inhandle:
         if stream_json:
             tweets = NonListStreamJsonListLoader(infile)
+            warnings.warn("Using NonListStreamJsonListLoader (SLOW).")
         else:
             tweets = loads(inhandle.read(), cls=ConcatJSONDecoder)
         for tweet in tweets:
