@@ -12,11 +12,11 @@ from bson.json_util import loads
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure, DuplicateKeyError
 
-from smappPy.json_util import ConcatJSONDecoder
 from smappPy.tweet_util import add_random_to_tweet, add_timestamp_to_tweet
+from smappPy.json_util import ConcatJSONDecoder,NonListStreamJsonListLoader
 
 
-def import_tweets(host, port, user, password, database, collection, infile, transform=True):
+def import_tweets(host, port, user, password, database, collection, infile, transform=True, stream_json=False):
     """
     Loads each line from the given infile into a json object, and directly inserts that to the
     given database and collection. 
@@ -41,7 +41,10 @@ def import_tweets(host, port, user, password, database, collection, infile, tran
     imported = 0
     skipped = 0
     with open(infile) as inhandle:
-        tweets = loads(inhandle.read(), cls=ConcatJSONDecoder)
+        if stream_json:
+            tweets = loads(inhandle.read(), cls=NonListStreamJsonListLoader)
+        else:
+            tweets = loads(inhandle.read(), cls=ConcatJSONDecoder)
         for tweet in tweets:
             if "id_str" not in tweet:
                 warnings.warn("Data read from file\n\t{0}\nnot a valid tweet".format(tweet))
@@ -81,7 +84,10 @@ if __name__ == "__main__":
         help="Collection in database")
     parser.add_argument("-f", "--file", action="store", dest="file", required=True, nargs='*',
         help="File to read input from")
+    parser.add_argument("--streamjson", action="store_true", dest="stream_json", default=False,
+        help="Use streaming JSON decoder. It is slower, but works for broken files,\
+        where the last json object might be terminated prematurely.")
 
     args = parser.parse_args()
     for filename in args.file:
-        import_tweets(args.host, args.port, args.user, args.password, args.db, args.collection, filename)
+        import_tweets(args.host, args.port, args.user, args.password, args.db, args.collection, filename, args.stream_json)

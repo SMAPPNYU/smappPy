@@ -80,3 +80,49 @@ class StreamJsonListLoader():
                     if next_char == '':
                         raise StopIteration
                     read_buffer += next_char
+class NonListStreamJsonListLoader():
+    """
+    When you have a big JSON file containint a list, such as
+
+    {
+        ...
+    }
+    {
+        ...
+    }
+    {
+        ...
+    }
+
+
+    And it's too big to be practically loaded into memory and parsed by json.load,
+    This class comes to the rescue. It lets you lazy-load the large json list.
+
+    What differentiates this from the StreamJsonListLoader class is that the former has a proper
+    JSON list, and this just has one JSON object per line, without surrounding []
+    and delimiting commas.
+    """
+
+    def __init__(self, filename_or_stream):
+        if type(filename_or_stream) == str:
+            self.stream = open(filename_or_stream)
+        else:
+            self.stream = filename_or_stream
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        read_buffer = self.stream.read(1)
+        while True:
+            try:
+                json_obj = json.loads(read_buffer)
+                return json_obj
+            except JSONDecodeError:
+                next_char = self.stream.read(1)
+                read_buffer += next_char
+                while next_char != '}':
+                    next_char = self.stream.read(1)
+                    if next_char == '':
+                        raise StopIteration
+                    read_buffer += next_char
