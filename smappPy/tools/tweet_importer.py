@@ -42,7 +42,7 @@ def import_tweets(host, port, user, password, database, collection, infile, tran
     skipped = 0
     with open(infile) as inhandle:
         if stream_json:
-            tweets = loads(inhandle.read(), cls=NonListStreamJsonListLoader)
+            tweets = NonListStreamJsonListLoader(infile)
         else:
             tweets = loads(inhandle.read(), cls=ConcatJSONDecoder)
         for tweet in tweets:
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", action="store", dest="file", required=True, nargs='*',
         help="File to read input from")
     parser.add_argument("--streamjson", action="store_true", dest="stream_json", default=False,
-        help="Use streaming JSON decoder. It is slower, but works for broken files,\
+        help="Use streaming JSON decoder. It is SLOW(!), but works for broken files,\
         where the last json object might be terminated prematurely.")
 
     args = parser.parse_args()
