@@ -1,13 +1,15 @@
 """
-Uploads basic userdocs (in accordance with build_user_collection) to DB without having to
-call Twitter API to populate them.
+Uploads basic userdocs to DB without calling Twitter API to populate them.
+
+@auth dpb
+@date 12/01/2014
 """
 
 import os
 import argparse
-from random import random
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
+from smappPy.user_collection.userdocs import ensure_userdoc_indexes, create_userdoc
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -44,36 +46,16 @@ if __name__ == "__main__":
     print "Uploading {0} IDs from {1}".format(len(user_ids), args.users_file)
 
     # Ensure indexes on user collection
-    collection.ensure_index("id", name="unique_id", unique=True, drop_dups=True, background=True)
-    collection.ensure_index("random_number", name="index_random", background=True)
-    collection.ensure_index("updated_timestamp", name="index_updated", background=True)
+    ensure_userdoc_indexes(collection)
 
+    # Create and save userdocs for all userids
     for uid in user_ids:
         print ".. Processing user {0}".format(uid)
-
-        user_obj = collection.find_one({"id": int(uid)})
-        if not user_obj:
-            user_obj = {}
-
-        user_obj["id"] = int(uid)
-        user_obj["random_number"] = random()
-        user_obj["updated_timestamp"] = None
-        user_obj["tweet_ids"] = None
-        user_obj["tweet_frequency"] = 0
-        user_obj["tweets_updated"] = None
-        user_obj["friend_ids"] = None
-        user_obj["follower_ids"] = None
-        user_obj["friends_updated"] = None
-        user_obj["followers_updated"] = None
-        if "status" in user_obj:
-            del(user_obj["status"])
+        userdoc = create_userdoc(uid)
         try:
-            collection.save(user_obj)
+            collection.save(userdoc)
         except DuplicateKeyError as e:
             print ".... Userdoc for user {0} already in DB. Skipping".format(uid)
             continue
     
     print "Complete"
-
-
-                
