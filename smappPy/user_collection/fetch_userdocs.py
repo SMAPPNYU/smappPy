@@ -1,7 +1,6 @@
 """
 (In contrast to upload_userdocs): From a seed file of user IDs,
-get userdocs
-from Twitter REST API and store in collection
+get userdocs from Twitter REST API and store in collection
 
 @auth dpb
 @date 12/01/2014
@@ -31,21 +30,21 @@ if __name__ == "__main__":
         help="JSON file w/ LIST of OAuth keys")
     parser.add_argument("-uf", "--users_file", required=True,
         help="File containing line-separated list of Twitter User IDs")
-    parser.add_argument("-np", "--num_passes", type=int, default=3,
-        help="Number passes over user collection to make before giving up [3]")
+    parser.add_argument("-np", "--num_passes", type=int, default=2,
+        help="Number passes over user collection to make before giving up [2]")
     parser.add_argument("-of", "--out_file", default=None,
         help="Optional outfile to store IDs in given list not retrievable [None]")
     args = parser.parse_args()
 
     # Create Pymongo database client and connection
-    mc = MongoClient(args.host, args.port)
-    db = mc[args.database]
+    client = MongoClient(args.host, args.port)
+    database = client[args.database]
     if args.user and args.password:
-        if not db.authenticate(args.user, args.password):
+        if not database.authenticate(args.user, args.password):
             raise ConnectionFailure(
                 "Mongo DB Authentication for User {0}, DB {1} failed".format(
                     args.user, args.database))
-    col = db[args.collection]
+    collection = database[args.collection]
 
     # Create smappPy APIPool
     api = APIPool(oauths_filename=args.oauthsfile, debug=True)
@@ -60,7 +59,7 @@ if __name__ == "__main__":
 
     # Populate DB with user data
     build_user_collection.populate_user_collection_from_ids(api,
-                                                            col,
+                                                            collection,
                                                             user_ids,
                                                             args.num_passes,
                                                             args.out_file)

@@ -100,3 +100,4 @@ def populate_user_collection_from_ids(api, collection, user_ids, num_passes=2, n
         with open(not_found_file, "w") as handle:
             for uid in users_not_found:
                 handle.write("{0}\n".format(uid))
+    print "Complete"
