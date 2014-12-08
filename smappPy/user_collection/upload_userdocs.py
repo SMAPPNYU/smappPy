@@ -1,5 +1,6 @@
 """
 Uploads basic userdocs to DB without calling Twitter API to populate them.
+Takes file containing list of IDs
 
 @auth dpb
 @date 12/01/2014
@@ -24,7 +25,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--database", required=True,
         help="Database to store data in")
     parser.add_argument("-c", "--collection", required=True,
-        help="Collection to store data in")
+        help="Collection to store user data in")
     parser.add_argument("-uf", "--users_file", required=True,
         help="File containing line-separated list of Twitter User IDs")
     args = parser.parse_args()
@@ -46,6 +47,7 @@ if __name__ == "__main__":
     print "Uploading {0} IDs from {1}".format(len(user_ids), args.users_file)
 
     # Ensure indexes on user collection
+    print "Ensuring collection indexes"
     ensure_userdoc_indexes(collection)
 
     # Create and save userdocs for all userids
@@ -57,5 +59,5 @@ if __name__ == "__main__":
         except DuplicateKeyError as e:
             print ".... Userdoc for user {0} already in DB. Skipping".format(uid)
             continue
-    
+
     print "Complete"
