@@ -10,6 +10,7 @@ from datetime import datetime
 from tweepy import TweepError
 
 RATE_LIMIT_ERROR = 88
+OVER_CAP_ERROR = 130
 
 class APIPool(object):
     """
@@ -61,17 +62,22 @@ class APIPool(object):
         try:
             return api_struct[0].__getattribute__(method_name)(*args, **kwargs)
         except TweepError as e:
-            if type(e.message) == list and e.message[0]['code'] == RATE_LIMIT_ERROR:
+            try:
+                error_json = json.loads(e.message)
+            except:
+                raise(e)
+            if "errors" not in error_json or len(error_json["errors"]) < 1:
+                raise(e)
+            elif error_json["errors"][0]["code"] == RATE_LIMIT_ERROR:
                 api_struct[1][method_name] = now
                 return self._call_with_throttling_per_method(method_name, *args, **kwargs)
-            elif type(e.message) == unicode:
-                message = json.loads(e.message)
-                if 'errors' in message and message['errors'][0]['code'] == RATE_LIMIT_ERROR:
-                    api_struct[1][method_name] = now
-                    return self._call_with_throttling_per_method(method_name, *args, **kwargs)
-                print e.message
+                logging.debug("Received RATE LIMIT: {0}".format(error_json["errors"][0]["message"]))
+            elif error_json["errors"][0]["code"] == OVER_CAP_ERROR:
+                api_struct[1][method_name] = now
+                return self._call_with_throttling_per_method(method_name, *args, **kwargs)
+                logging.debug("Received OVER CAP.: {0}".format(error_json["errors"][0]["message"]))
             else:
-                raise e
+                raise(e)
 
     def __getattribute__(self, name):
         def api_method(*args, **kwargs):

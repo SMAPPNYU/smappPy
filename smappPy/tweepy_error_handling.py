@@ -2,6 +2,7 @@
 Twitter error handling functions
 """
 
+import simplejson as json
 from ssl import SSLError
 from httplib import IncompleteRead
 from tweepy.error import TweepError
@@ -22,34 +23,26 @@ def call_with_error_handling(function, *args, **kwargs):
     try:
        ret = function(*args, **kwargs)
     except TweepError as e:
-
-        print
-        print
-        print e
-        print dir(e)
-        print e.reason
-        print e.response
-        print e.message
-        print e.args
-        print
-        print
-
-        if type(e.message) == list and len(e.message) > 0:
-            if e.message[0]["code"] == 34:
-                print ".. No user found with ID"
-            elif e.message[0]["code"] == 63:
-                print ".. User's account has been suspended"
-            elif e.message[0]["code"] == 88:
-                print ".. Rate limit exceeded"
-            elif e.message[0]["code"] == 130:
-                print ".. Twitter over capactity (130)"
-            elif e.message[0]["code"] == 131:
-                print ".. Unknown internal twitter error (131)"
-            return (None, e.message[0]["code"])
-        elif type(e.message) in [str, unicode]:
+        try:
+            error_json = json.loads(e.message)
+        except:
             print ".. Error: {0}".format(e)
             return (None, 1)
-        raise(e)
+        if "errors" in error_json and len(error_json["errors"]) > 0:
+            if error_json["errors"][0]["code"] == 34:
+                print ".. No user found with ID"
+            elif error_json["errors"][0]["code"] == 63:
+                print ".. User's account has been suspended"
+            elif error_json["errors"][0]["code"] == 88:
+                print ".. Rate limit exceeded"
+            elif error_json["errors"][0]["code"] == 130:
+                print ".. Twitter over capactity (130)"
+            elif error_json["errors"][0]["code"] == 131:
+                print ".. Unknown internal twitter error (131)"
+            return (None, error_json["errors"][0]["code"])
+        else:
+            print ".. Error: {0}".format(e)
+            return (None, 1)
     except IncompleteRead as i:
         print ".. HTTPLib incomplete read error: {0}".format(i)
         return (None, 2)
@@ -61,5 +54,3 @@ def call_with_error_handling(function, *args, **kwargs):
         return (None, 4)
 
     return (ret, 0)
-
-    {"errors":[{"message":"Rate limit exceeded","code":88}]}
