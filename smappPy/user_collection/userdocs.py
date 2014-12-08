@@ -78,3 +78,4 @@ def format_userdoc_collection(collection, delete_status=True):
                 userdoc[field] = default_func()
 
         collection.save(userdoc)
+    print "Complete"
