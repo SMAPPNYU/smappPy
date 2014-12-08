@@ -21,7 +21,7 @@ CAPACITY_WAIT = 30
 def populate_user_collection_from_collection(api, seed_collection, store_collection, num_passes=2,
     not_found_file=None, sample=1.0):
     """
-    Populates a user collection (queries Twitter for all fully-hydrated user objects and saves)
+    Populates a user collection (queries Twitter for all fully-hydrated user objects, then saves)
     from the docs in given seed_collection. Docs in seed collection must have an 'id' field
     representing a Twitter User ID. 
     Note: seed_collection and store_collection can be the same collection (in which case, userdocs
