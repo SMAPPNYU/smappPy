@@ -16,6 +16,7 @@ userdoc_fields_defaults = {
     "created_at_timestamp": lambda: None,
     "updated_timestamp": lambda: datetime.now(),
     "tweet_ids": lambda: None,
+    "latest_tweet_id": lambda: None,
     "tweet_frequency": lambda: 0.0,
     "tweets_updated": lambda: None,
     "friend_ids": lambda: None,
