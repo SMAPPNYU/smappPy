@@ -22,6 +22,18 @@ def call_with_error_handling(function, *args, **kwargs):
     try:
        ret = function(*args, **kwargs)
     except TweepError as e:
+
+        print
+        print
+        print e
+        print dir(e)
+        print e.reason
+        print e.response
+        print e.message
+        print e.args
+        print
+        print
+
         if type(e.message) == list and len(e.message) > 0:
             if e.message[0]["code"] == 34:
                 print ".. No user found with ID"
@@ -49,3 +61,5 @@ def call_with_error_handling(function, *args, **kwargs):
         return (None, 4)
 
     return (ret, 0)
+
+    {"errors":[{"message":"Rate limit exceeded","code":88}]}

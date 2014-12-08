@@ -14,19 +14,20 @@ from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from smappPy.tweepy_pool import APIPool
 from smappPy.tweepy_error_handling import call_with_error_handling
-#TODO: Local imports to test, change to smappPy when working
-#from smappPy.user_collection.userdocs import ensure_userdoc_indexes, create_userdoc
-#from smappPy.user_collection.network_edges import create_edge_doc, ensure_edge_indexes
-from userdocs import ensure_userdoc_indexes, create_userdoc
-from network_edges import create_edge_doc, ensure_edge_indexes
+from smappPy.user_collection.userdocs import ensure_userdoc_indexes, create_userdoc
+from smappPy.user_collection.network_edges import create_edge_doc, ensure_edge_indexes
+
 
 #TODO: def get_friend_ids_sample(api, user_id, user_doc=None, sample=0.1)
-#TODO: Gets sample proportion of friends. Takes userdoc - if None, queries
+#TODO: Gets sample proportion of friends. Takes userdoc: if None, queries
 #TODO: rest API for user, get num friends, iterates over cursor until sample
 #TODO: number is hit
 
 #TODO: def get_friends(api, user_id)
 #TODO: Gets fully-hydrated friend user docs via Tweepy 'friends' method
+
+#TODO: Change all prints and info to logging
+
 
 def get_friends_ids(api, user_id):
     """
@@ -143,6 +144,9 @@ def populate_friends_from_collection(api, seed_collection, friend_collection, ed
         user["friends_updated"] = datetime.now()
         seed_collection.save(user)
 
+    # Print failure numbers
+    print "Failed to find friends for {0} users".format(len(friend_request_failed_for))
+
 
 #TODO: Add followers_sample functionality, depending on get_followers_ids_sample
 def populate_followers_from_collection(api, seed_collection, follower_collection, edge_collection=None,
@@ -209,6 +213,9 @@ def populate_followers_from_collection(api, seed_collection, follower_collection
         user["updated_timestamp"] = datetime.now()
         user["followers_updated"] = datetime.now()
         seed_collection.save(user)
+
+    # Print failure numbers
+    print "Failed to find followers for {0} users".format(len(friend_request_failed_for))
 
 
 if __name__ == "__main__":
