@@ -28,7 +28,7 @@ args = parser.parse_args()
 
 client = MongoClient(args.server, args.port)
 database = client[args.database]
-database.authenticate(args.username, args.password)
+database.authenticate(args.user, args.password)
 collection = database[args.collection]
 
 format_userdoc_collection(collection, delete_status=not args.keep_status)

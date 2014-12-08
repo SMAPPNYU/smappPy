@@ -72,7 +72,8 @@ def format_userdoc_collection(collection, delete_status=True):
     print "Processing {0} userdocs from {1}".format(collection.count(), collection)
     for userdoc in collection.find():
         if delete_status:
-            del(userdoc["status"])
+            if "status" in userdoc:
+                del(userdoc["status"])
 
         for field, default_func in userdoc_fields_defaults.items():
             if field not in userdoc:
