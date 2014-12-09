@@ -26,7 +26,7 @@ def call_with_error_handling(function, *args, **kwargs):
         try:
             error_json = json.loads(e.message)
         except:
-            print ".. Error: {0}".format(e)
+            print ".. Error (failed to load JSON): {0}".format(e)
             return (None, 1)
         if "errors" in error_json and len(error_json["errors"]) > 0:
             if error_json["errors"][0]["code"] == 34:
@@ -41,7 +41,7 @@ def call_with_error_handling(function, *args, **kwargs):
                 print ".. Unknown internal twitter error (131)"
             return (None, error_json["errors"][0]["code"])
         else:
-            print ".. Error: {0}".format(e)
+            print ".. Error (JSON in unexpected format): {0}".format(e)
             return (None, 1)
     except IncompleteRead as i:
         print ".. HTTPLib incomplete read error: {0}".format(i)
@@ -54,3 +54,5 @@ def call_with_error_handling(function, *args, **kwargs):
         return (None, 4)
 
     return (ret, 0)
+
+    #[{'message': 'Rate limit exceeded', 'code': 88}]
