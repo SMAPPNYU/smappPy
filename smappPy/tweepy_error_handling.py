@@ -26,7 +26,7 @@ def parse_tweepy_error(error):
     }
     """
     # Make appropriate for JSON parsing
-    error_str = error.message.replace("'", "\"")
+    error_str = str(error.message).replace("'", "\"")
 
     try:
         error_json = json.loads(error_str)
@@ -87,4 +87,3 @@ def call_with_error_handling(function, *args, **kwargs):
 
 
 
-    
