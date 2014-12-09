@@ -42,7 +42,7 @@ def get_friends_ids(api, user_id):
     user_list, ret_code = call_with_error_handling(list, cursor.items())
 
     if ret_code != 0:
-        warnings.warn("User {0}: Friends request failed".format(user_id))
+        print ".. User {0}: Friends request failed".format(user_id)
     
     # Return user list from API or None (call_with_error_handling returns None if
     # call fail)
@@ -61,7 +61,7 @@ def get_followers_ids(api, user_id):
     user_list, ret_code = call_with_error_handling(list, cursor.items())
 
     if ret_code != 0:
-        warnings.warn("User {0}: Followers request failed".format(user_id))
+        print ".. User {0}: Followers request failed".format(user_id)
     
     # Return user list from API or None (call_with_error_handling returns None if
     # call fail)
@@ -136,8 +136,9 @@ def populate_friends_from_collection(api, seed_collection, friend_collection, ed
                 try:
                     edge_collection.save(edge_doc)
                 except DuplicateKeyError:
-                    warnings.warn("Edge {0} alread in DB, skipping".format(
-                        edge_doc))
+                    #warnings.warn("Edge {0} alread in DB, skipping".format(
+                    #    edge_doc))
+                    pass
 
         # Update user doc's timestamps and save
         user["updated_timestamp"] = datetime.now()
@@ -197,7 +198,7 @@ def populate_followers_from_collection(api, seed_collection, follower_collection
             except DuplicateKeyError:
                 #warnings.warn("Follower {0} already in followers collection".format(
                 #   follower_id))
-                continue
+                pass
 
         # Optionally save "edge" document
         if edge_collection:
@@ -206,8 +207,9 @@ def populate_followers_from_collection(api, seed_collection, follower_collection
                 try:
                     edge_collection.save(edge_doc)
                 except DuplicateKeyError:
-                    warnings.warn("Edge {0} alread in DB, skipping".format(
-                        edge_doc))
+                    #warnings.warn("Edge {0} alread in DB, skipping".format(
+                    #    edge_doc))
+                    pass
 
         # Update user doc's timestamps and save
         user["updated_timestamp"] = datetime.now()
