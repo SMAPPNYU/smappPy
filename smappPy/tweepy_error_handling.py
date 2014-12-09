@@ -71,7 +71,7 @@ def call_with_error_handling(function, *args, **kwargs):
        ret = function(*args, **kwargs)
     except TweepError as e:
         error_dict = parse_tweepy_error(e)
-        print ".. Error {0}: {1}".format(error_dict["code"], error_dict["message"])        
+        print "__ Error {0}: {1}".format(error_dict["code"], error_dict["message"])        
         return (None, error_dict["code"])
     except IncompleteRead as i:
         print ".. HTTPLib incomplete read error: {0}".format(i)
