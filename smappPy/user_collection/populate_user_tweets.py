@@ -68,9 +68,11 @@ def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user
             continue
 
         # Reverse tweets when storing (given order is newest to oldest)
-        saved_count = 0
+        saved_tweet_ids = []
         for tweet in tweets[::-1]:
-            saved_count += save_tweet(tweet_collection, tweet)
+            saved_id = save_tweet(tweet_collection, tweet)
+            if saved_id:
+                saved_tweet_ids.append(saved_id)
 
         # Calculate frequency
         if len(tweets) < 2:
@@ -81,8 +83,8 @@ def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user
             frequency = len(tweets) / float((last_tweet_date - first_tweet_date).days or 1)
 
         latest_tweet_id = tweets[0].id if tweets else None
-        update_user(user_collection, user, latest_tweet_id, frequency)
-        print ".. {0} tweets found, {1} saved".format(len(tweets), saved_count)
+        update_user(user_collection, user, latest_tweet_id, frequency, saved_tweet_ids)
+        print ".. {0} tweets found, {1} saved".format(len(tweets), len(saved_tweet_ids))
 
 def save_tweet(tweet_collection, tweet):
     """
@@ -95,15 +97,16 @@ def save_tweet(tweet_collection, tweet):
     try:
         tweet_collection.save(json_tweet)
     except DuplicateKeyError:
-        return 0
-    return 1
+        return None
+    return json_tweet["id"]
 
-def update_user(user_collection, user, latest_tweet_id, frequency):
+def update_user(user_collection, user, latest_tweet_id, frequency, tweet_ids):
     """
     Updates a user's 'latest_tweet_id' and 'updated_timestamp'
     """
-    user["updated_timestamp"] = datetime.now()
-    user["tweets_updated"] = datetime.now()
+    updated_at = datetime.now()
+    user["updated_timestamp"] = updated_at
+    user["tweets_updated"] = updated_at
     
     # Frequency is a compound average of frequencies
     if "tweet_frequency" in user and user["tweet_frequency"]:
@@ -113,6 +116,11 @@ def update_user(user_collection, user, latest_tweet_id, frequency):
 
     if latest_tweet_id:
         user["latest_tweet_id"] = latest_tweet_id
+
+    if "tweet_ids" not in user or not user["tweet_ids"]:
+        user["tweet_ids"] = list(set(tweet_ids))
+    else:
+        user["tweet_ids"] = list(set(user["tweet_ids"] + tweet_ids))
 
     try:
         user_collection.save(user)
