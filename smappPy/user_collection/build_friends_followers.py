@@ -93,9 +93,9 @@ def populate_friends_from_collection(api, seed_collection, friend_collection, ed
     # Sample users (if necessary)
     if user_sample < 1.0:
         seed_count = seed_collection.count()
-        users = seed_collection.find(limit=int(seed_count * user_sample))
+        users = seed_collection.find(limit=int(seed_count * user_sample), timeout=False)
     else:
-        users = seed_collection.find()
+        users = seed_collection.find(timeout=False)
 
     # Progress vars
     user_count = users.count(with_limit_and_skip=True)
@@ -164,9 +164,9 @@ def populate_followers_from_collection(api, seed_collection, follower_collection
     # Sample users (if necessary)
     if user_sample < 1.0:
         seed_count = seed_collection.count()
-        users = seed_collection.find(limit=int(seed_count * user_sample))
+        users = seed_collection.find(limit=int(seed_count * user_sample), timeout=False)
     else:
-        users = seed_collection.find()
+        users = seed_collection.find(timeout=False)
 
     # Progress vars
     user_count = users.count(with_limit_and_skip=True)
