@@ -8,6 +8,7 @@ import json
 import time
 from datetime import datetime
 from tweepy import TweepError
+from smappPy.tweepy_error_handling import parse_tweepy_error
 
 RATE_LIMIT_ERROR = 88
 OVER_CAP_ERROR = 130
@@ -62,20 +63,15 @@ class APIPool(object):
         try:
             return api_struct[0].__getattribute__(method_name)(*args, **kwargs)
         except TweepError as e:
-            try:
-                error_json = json.loads(e.message)
-            except:
-                raise(e)
-            if "errors" not in error_json or len(error_json["errors"]) < 1:
-                raise(e)
-            elif error_json["errors"][0]["code"] == RATE_LIMIT_ERROR:
+            error_dict = parse_tweepy_error(e)
+            if error_dict["code"] == RATE_LIMIT_ERROR:
                 api_struct[1][method_name] = now
+                logging.debug("Received rate limit: {0}".format(error_dict["message"]))
                 return self._call_with_throttling_per_method(method_name, *args, **kwargs)
-                logging.debug("Received RATE LIMIT: {0}".format(error_json["errors"][0]["message"]))
-            elif error_json["errors"][0]["code"] == OVER_CAP_ERROR:
+            elif error_dict["code"] == OVER_CAP_ERROR:
                 api_struct[1][method_name] = now
+                logging.debug("Received over cap.: {0}".format(error_dict["message"]))
                 return self._call_with_throttling_per_method(method_name, *args, **kwargs)
-                logging.debug("Received OVER CAP.: {0}".format(error_json["errors"][0]["message"]))
             else:
                 raise(e)
 
