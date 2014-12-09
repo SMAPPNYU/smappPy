@@ -2,7 +2,7 @@
 Twitter error handling functions
 """
 
-import simplejson as json
+import json
 from ssl import SSLError
 from httplib import IncompleteRead
 from tweepy.error import TweepError
@@ -13,6 +13,8 @@ from tweepy.error import TweepError
 # 
 # friends_ids and followers_ids endpoints    
 #[{'message': 'Rate limit exceeded', 'code': 88}]
+
+#[{u'message': u'Rate limit exceeded', u'code': 88}]
 
 def parse_tweepy_error(error):
     """
@@ -25,29 +27,26 @@ def parse_tweepy_error(error):
         "message": <str>"Some descriptive message"
     }
     """
-    # Make appropriate for JSON parsing
-    error_str = str(error.message).replace("'", "\"")
+    code, message = 1, str(error)
 
     try:
-        error_json = json.loads(error_str)
+        e = json.loads(error.message)
     except:
-        return {"code": 1, "message": str(error)}
+        e = error.message
 
-    code = 1
-    message = str(error)
-
-    if "errors" in error_json:
-        if len(error_json["errors"]) > 0:
+    if isinstance(e, dict):
+        if "errors" in e:
+            if len(e["errors"]) > 0:
+                try:
+                    code = e["errors"][0]["code"]
+                    message = e["errors"][0]["message"]
+                except:
+                    pass
+    elif isinstance(e, list):
+        if len(e) > 0:
             try:
-                code = error_json["errors"][0]["code"]
-                message = error_json["errors"][0]["message"]
-            except KeyError:
-                pass
-    elif isinstance(error_json, list):
-        if len(error_json) > 0:
-            try:
-                code = error_json[0]["code"]
-                message = error_json[0]["message"]
+                code = e[0]["code"]
+                message = e[0]["message"]
             except:
                 pass
 
