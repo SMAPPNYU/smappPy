@@ -38,13 +38,13 @@ def get_friends_ids(api, user_id):
         user_id - twitter user id
     Returns list of IDs or None (if API call fails)
     """
-    user_list, ret_code = call_with_error_handling(list,
-        Cursor(api.friends_ids, user_id=user_id).items())
+    cursor = Cursor(api.friends_ids, user_id=user_id)
+    user_list, ret_code = call_with_error_handling(list, cursor.items())
 
     if ret_code != 0:
-        warnings.warn("User {0}: Friends request failed")
+        warnings.warn("User {0}: Friends request failed".format(user_id))
     
-    # Retun user list from API or None (call_with_error_handling returns None if
+    # Return user list from API or None (call_with_error_handling returns None if
     # call fail)
     return user_list
 
@@ -57,13 +57,13 @@ def get_followers_ids(api, user_id):
         user_id - twitter user id
     Returns list of IDs or None (if API call fails)
     """
-    user_list, ret_code = call_with_error_handling(list,
-        Cursor(api.followers_ids, user_id=user_id).items())
+    cursor = Cursor(api.followers_ids, user_id=user_id)
+    user_list, ret_code = call_with_error_handling(list, cursor.items())
 
     if ret_code != 0:
-        warnings.warn("User {0}: Followers request failed")
+        warnings.warn("User {0}: Followers request failed".format(user_id))
     
-    # Retun user list from API or None (call_with_error_handling returns None if
+    # Return user list from API or None (call_with_error_handling returns None if
     # call fail)
     return user_list
 
