@@ -22,7 +22,6 @@ from smappPy.collection_util import create_tweet_indexes
 from smappPy.tweepy_error_handling import call_with_error_handling
 from smappPy.tweet_util import add_random_to_tweet, add_timestamp_to_tweet
 
-over_capacity_wait = 5
 
 def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user, ensure_indexes=True):
     """
@@ -54,12 +53,8 @@ def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user
         while return_code != 0:
             tweets, return_code = call_with_error_handling(list, cursor.items(tweets_per_user))
 
-            # Twitter over capacity
-            if return_code == 130:
-                print ".. Over Cap. Sleeping for {0} seconds".format(over_capacity_wait)
-                time.sleep(over_capacity_wait)
             # User no longer exists. Move on
-            elif return_code == 34:
+            if return_code == 34:
                 print ".. User {0} no longer exists, skipping".format(user["id"])
                 break
             elif return_code != 0:
