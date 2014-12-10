@@ -23,10 +23,16 @@ from smappPy.user_collection.network_edges import create_edge_doc, ensure_edge_i
 #TODO: rest API for user, get num friends, iterates over cursor until sample
 #TODO: number is hit
 
+#TODO: Add friends_sample param to populate_.... Requires get_friend_ids_sample
+#TODO: Add followers_sample param to populate_.... Requires get_followers_ids_sample
+
 #TODO: def get_friends(api, user_id)
 #TODO: Gets fully-hydrated friend user docs via Tweepy 'friends' method
 
 #TODO: Change all prints and info to logging
+
+#TODO: Add date cutoff for populate_friends/followers_from_collection (ie: 
+#TODO: only get tweets for users with 'tweets_updated' field ealier/later than X)
 
 
 def get_friends_ids(api, user_id):
@@ -67,7 +73,6 @@ def get_followers_ids(api, user_id):
     # call fail)
     return user_list
 
-#TODO: Add friends_sample functionality, depending on get_friend_ids_sample
 def populate_friends_from_collection(api, seed_collection, friend_collection, edge_collection=None,
     user_sample=1.0, requery=True, print_progress_every=1000):
     """
@@ -154,8 +159,6 @@ def populate_friends_from_collection(api, seed_collection, friend_collection, ed
     # Print failure numbers
     print "Failed to find friends for {0} users".format(len(friend_request_failed_for))
 
-
-#TODO: Add followers_sample functionality, depending on get_followers_ids_sample
 def populate_followers_from_collection(api, seed_collection, follower_collection, edge_collection=None,
     user_sample=1.0, requery=True, print_progress_every=1000):
     """
