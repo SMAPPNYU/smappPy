@@ -134,7 +134,7 @@ def update_user(user_collection, user, latest_tweet_id, frequency, tweet_ids):
 
     try:
         user_collection.save(user)
-    except Error as e:
+    except Exception as e:
         print ".. Couldn't save user: {0}".format(e)
 
 
