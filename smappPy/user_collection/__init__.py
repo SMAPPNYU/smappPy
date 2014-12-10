@@ -1,3 +1,3 @@
 """
-Mdule indicator for user collection
+Module indicator for user collection
 """

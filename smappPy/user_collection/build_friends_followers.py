@@ -69,7 +69,7 @@ def get_followers_ids(api, user_id):
 
 #TODO: Add friends_sample functionality, depending on get_friend_ids_sample
 def populate_friends_from_collection(api, seed_collection, friend_collection, edge_collection=None,
-    user_sample=1.0, print_progress_every=1000):
+    user_sample=1.0, requery=True, print_progress_every=1000):
     """
     Populates given 'friends_collection' with local user documents representing the friends
     of each user in given 'seed_collection'.
@@ -83,6 +83,7 @@ def populate_friends_from_collection(api, seed_collection, friend_collection, ed
         friend_collection  - fully authenticated (read/write) mongo collection
         edge_collection    - [OPTIONAL] collection to store simple edge: {to: ID, from: ID}
         user_sample        - proportion of seed users to fetch friends for
+        requery            - If False, only query for user's friends if 'friend_ids' field is empty
     """
     # Ensure indexes
     ensure_userdoc_indexes(seed_collection)
@@ -107,6 +108,11 @@ def populate_friends_from_collection(api, seed_collection, friend_collection, ed
         if user_it % print_progress_every == 0:
             print ".. Processing user {0} of {1}".format(user_it, user_count)
         user_it += 1
+
+        # Check requery. If false, and user has friend_ids, skip user
+        if not requery and user["friend_ids"]:
+            print ".... User {0} has friends, not re-querying".format(user["id"])
+            continue
 
         friend_ids = get_friends_ids(api, user["id"])
         if friend_ids == None:
@@ -151,7 +157,7 @@ def populate_friends_from_collection(api, seed_collection, friend_collection, ed
 
 #TODO: Add followers_sample functionality, depending on get_followers_ids_sample
 def populate_followers_from_collection(api, seed_collection, follower_collection, edge_collection=None,
-    user_sample=1.0, print_progress_every=1000):
+    user_sample=1.0, requery=True, print_progress_every=1000):
     """
     See 'populate_friends_from_collection'. Exactly the same, but for followers
     """
@@ -178,6 +184,11 @@ def populate_followers_from_collection(api, seed_collection, follower_collection
         if user_it % print_progress_every == 0:
             print ".. Processing user {0} of {1}".format(user_it, user_count)
         user_it += 1
+
+        # Check requery. If false, and user has follower_ids, skip user
+        if not requery and user["follower_ids"]:
+            print ".... User {0} has followers, not re-querying".format(user["id"])
+            continue
 
         follower_ids = get_followers_ids(api, user["id"])
         if follower_ids == None:
@@ -242,6 +253,8 @@ if __name__ == "__main__":
         help="Collection in which to store network edges [None]")
     parser.add_argument("-o", "--oauthsfile", required=True,
         help="Twitter oauths file. JSON file w/ LIST of app documents")
+    parser.add_argument("-rq", "--requery", action="store_true", default=False,
+        help="Whether to query Twitter for frs/fols of users that already have frs/fols [False]")
     parser.add_argument("-ppe", "--print_progress_every", type=int,
         default=1000, help="Print progress every Nth user [1000]")
     args = parser.parse_args()
@@ -261,7 +274,7 @@ if __name__ == "__main__":
         print "Populating Friends from {0}".format(seed_collection)
         friend_collection = database[args.friends_collection]
         populate_friends_from_collection(api, seed_collection, friend_collection, 
-            edge_collection=edge_collection, user_sample=1.0,
+            edge_collection=edge_collection, user_sample=1.0, requery=args.requery,
             print_progress_every=args.print_progress_every)
         print "Friends complete"
     
@@ -269,7 +282,7 @@ if __name__ == "__main__":
         print "Populating Followers from {0}".format(seed_collection)
         follower_collection = database[args.followers_collection]
         populate_followers_from_collection(api, seed_collection, follower_collection, 
-            edge_collection=edge_collection, user_sample=1.0,
+            edge_collection=edge_collection, user_sample=1.0, requery=args.requery,
             print_progress_every=args.print_progress_every)
         print "Followers complete"
 
