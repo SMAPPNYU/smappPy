@@ -22,20 +22,30 @@ from smappPy.collection_util import create_tweet_indexes
 from smappPy.tweepy_error_handling import call_with_error_handling
 from smappPy.tweet_util import add_random_to_tweet, add_timestamp_to_tweet
 
+#TODO: Add date cutoff (ie: only get tweets for users with 'tweets_updated' field
+#TODO: ealier/later than X)
 
-def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user, ensure_indexes=True):
+def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user,
+    ensure_indexes=True, requery=True):
     """
     Iterates through user_collection, querying Twitter API for last 'tweets_per_user'
     tweets. Considers last tweet fetched for each user. Updates user access time and last
     tweet fetched. Calculates and stores user tweet frequency.
+    If requery is False, does not query for tweets of user that already has tweet ids in
+    'tweet_ids' field.
     """
     if ensure_indexes:
         print "Ensuring indexes on tweet collection..."
         create_tweet_indexes(tweet_collection)
 
-    #TODO: This sorted find takes a long time on a non-indexed field
+    #TODO: This sorted find may take a long time on a non-indexed field
     for user in user_collection.find(timeout=False).sort("tweets_updated", ASCENDING):
         print "Considering user {0}".format(user["id"]),
+
+        # Check requery and user tweets. If requery False and user has tweets, skip user
+        if not requery and user["tweet_ids"]:
+            print ".. User {0} has tweets, not re-querying".format(user["id"])
+            continue
 
         if user["latest_tweet_id"]:
             cursor = tweepy.Cursor(api.user_timeline, 
@@ -150,6 +160,8 @@ if __name__ == "__main__":
         help="Number of tweets per user to store [100]")
     parser.add_argument("-ni", "--no_indexes", action="store_true", default=False,
         help="Flag for whether or not to create indexes (add to skip index creation)")
+    parser.add_argument("-rq", "--requery", action="store_true", default=False,
+        help="Whether to query Twitter for tweets of users that already have them in DB [False]")
     args = parser.parse_args()
 
     # Create Pymongo database client and connection
@@ -158,7 +170,8 @@ if __name__ == "__main__":
     if args.user and args.password:
         if not db.authenticate(args.user, args.password):
             raise ConnectionFailure(
-                "Mongo DB Authentication for User {0}, DB {1} failed".format(args.user, args.database))
+                "Mongo DB Authentication for User {0}, DB {1} failed".format(
+                    args.user, args.database))
     user_col = db[args.user_collection]
     tweet_col = db[args.tweet_collection]
 
@@ -166,5 +179,10 @@ if __name__ == "__main__":
     api = APIPool(oauths_filename=args.oauthsfile, debug=True)
 
     # Populate DB with user data
-    populate_user_tweets(api, user_col, tweet_col, args.num_tweets, ensure_indexes=not args.no_indexes)
+    populate_user_tweets(api,
+                         user_col,
+                         tweet_col,
+                         args.num_tweets,
+                         ensure_indexes=not args.no_indexes,
+                         requery=args.requery)
 
