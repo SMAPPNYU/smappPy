@@ -20,6 +20,7 @@ from smappPy.user_collection.network_edges import create_edge_doc, ensure_edge_i
 
 BSON_NULL = 10
 
+
 #TODO: def get_friend_ids_sample(api, user_id, user_doc=None, sample=0.1)
 #TODO: Gets sample proportion of friends. Takes userdoc: if None, queries
 #TODO: rest API for user, get num friends, iterates over cursor until sample
@@ -285,9 +286,10 @@ if __name__ == "__main__":
     parser.add_argument("-ppe", "--print_progress_every", type=int,
         default=1000, help="Print progress every Nth user [1000]")
     parser.add_argument("-ut", "--update_threshold", type=int, nargs=5, default=None,
-        help="If present, only users with friends/followers_updated timestamp BEFORE" \
+        help="If present, only users with friends/followers_updated timestamp BEFORE " \
         "given value will be updated. Format is five numbers, space-separated: " \
-        "Year Month Day Hour Minute. EG: 2014 3 15 12 0. (Time in 24-hour format")
+        "Year Month Day Hour Minute. EG: 2014 3 15 12 0. (Time in 24-hour format) " \
+        "[None]")
     args = parser.parse_args()
     args.update_threshold = datetime(*args.update_threshold) if args.update_threshold else None
 
@@ -298,7 +300,7 @@ if __name__ == "__main__":
     logging.basicConfig(filename=logfile + ".log",
                         format="%(asctime)s %(levelname)s: %(message)s",
                         datefmt="%m/%d/%Y %H:%M:%S",
-                        level=logging.DEBUG)
+                        level=logging.INFO)
     logging.info("Friend/Follower collection started on {0}.{1}".format(args.database,
         args.seed_collection))
     logging.info("Passed arguments: {0}".format(args))
