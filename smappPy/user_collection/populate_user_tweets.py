@@ -9,6 +9,7 @@ user collection.
 import time
 import tweepy
 import random
+import logging
 import argparse
 
 from pymongo import MongoClient
@@ -22,11 +23,13 @@ from smappPy.collection_util import create_tweet_indexes
 from smappPy.tweepy_error_handling import call_with_error_handling
 from smappPy.tweet_util import add_random_to_tweet, add_timestamp_to_tweet
 
+BSON_NULL = 10
+
 #TODO: Add date cutoff (ie: only get tweets for users with 'tweets_updated' field
 #TODO: ealier/later than X)
 
 def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user,
-    ensure_indexes=True, requery=True):
+    ensure_indexes=True, requery=True, update_threshold=None):
     """
     Iterates through user_collection, querying Twitter API for last 'tweets_per_user'
     tweets. Considers last tweet fetched for each user. Updates user access time and last
@@ -35,16 +38,29 @@ def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user
     'tweet_ids' field.
     """
     if ensure_indexes:
-        print "Ensuring indexes on tweet collection..."
+        logger.info("Ensuring indexes on tweet collection")
         create_tweet_indexes(tweet_collection)
+    
+    # Get DB cursor over users according to parameters
+    if update_threshold:
+        users = user_collection.find({"$or": [
+                                        {"tweets_updated": {"$lt": update_threshold}},
+                                        {"tweets_updated": {"$type": BSON_NULL}}
+                                     ]},
+                                     timeout=False,
+                                     sort=[("tweets_updated", ASCENDING)])
+    else:
+        users = user_collection.find(timeout=False,
+                                     sort=[("tweets_updated", ASCENDING)])
+    logger.info("Considering {0} users total".format(users.count(with_limit_and_skip=True)))
 
-    #TODO: This sorted find may take a long time on a non-indexed field
-    for user in user_collection.find(timeout=False).sort("tweets_updated", ASCENDING):
-        print "Considering user {0}".format(user["id"]),
+    # Iterate over users, attempting to fetch and store tweets for each
+    for user in users:
+        logger.info("Considering user {0}".format(user["id"]))
 
         # Check requery and user tweets. If requery False and user has tweets, skip user
         if not requery and user["tweet_ids"]:
-            print ".. User {0} has tweets, not re-querying".format(user["id"])
+            logger.debug(".. User {0} has tweets, not re-querying".format(user["id"]))
             continue
 
         if user["latest_tweet_id"]:
@@ -65,10 +81,10 @@ def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user
 
             # User no longer exists. Move on
             if return_code == 34:
-                print ".. User {0} no longer exists, skipping".format(user["id"])
+                logger.warn(".. User {0} no longer exists, skipping".format(user["id"]))
                 break
             elif return_code != 0:
-                print ".. Error {0} for user {1}, skipping".format(return_code, user["id"])
+                logger.warn(".. Error {0} for user {1}, skipping".format(return_code, user["id"]))
                 break
 
         # Do a final check of tweet population. If None, there was an error that waiting
@@ -94,7 +110,7 @@ def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user
 
         latest_tweet_id = tweets[0].id if tweets else None
         update_user(user_collection, user, latest_tweet_id, frequency, saved_tweet_ids)
-        print ".. {0} tweets found, {1} saved".format(len(tweets), len(saved_tweet_ids))
+        logger.info(".. {0} tweets found, {1} saved".format(len(tweets), len(saved_tweet_ids)))
 
 def save_tweet(tweet_collection, tweet):
     """
@@ -107,6 +123,7 @@ def save_tweet(tweet_collection, tweet):
     try:
         tweet_collection.save(json_tweet)
     except DuplicateKeyError:
+        logger.warn("Tweet {0} duplicate in DB".format(tweet.id))
         return None
     return json_tweet["id"]
 
@@ -135,7 +152,7 @@ def update_user(user_collection, user, latest_tweet_id, frequency, tweet_ids):
     try:
         user_collection.save(user)
     except Exception as e:
-        print ".. Couldn't save user: {0}".format(e)
+        logger.error("Couldn't save user: {0}".format(e))
 
 
 if __name__ == "__main__":
@@ -162,9 +179,30 @@ if __name__ == "__main__":
         help="Flag for whether or not to create indexes (add to skip index creation)")
     parser.add_argument("-rq", "--requery", action="store_true", default=False,
         help="Whether to query Twitter for tweets of users that already have them in DB [False]")
+    parser.add_argument("-ut", "--update_threshold", type=int, nargs=5, default=None,
+        help="If present, only users with friends/followers_updated timestamp BEFORE " \
+        "given value will be updated. Format is five numbers, space-separated: " \
+        "Year Month Day Hour Minute. EG: 2014 3 15 12 0. (Time in 24-hour format) " \
+        "[None]")
     args = parser.parse_args()
+    args.update_threshold = datetime(*args.update_threshold) if args.update_threshold else None
+
+    # Set up logging
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
+    fh = logging.FileHandler(filename="{0}.{1}.Tweets.log".format(args.database, args.user_collection))
+    fh.setLevel(logging.DEBUG)
+    fm = logging.Formatter(fmt="%(asctime)s %(levelname)s: %(message)s",
+                           datefmt="%m/%d/%Y %H:%M:%S")
+    fh.setFormatter(fm)
+    logger.addHandler(fh)
+
+    logger.info("Tweet collection started on users in {0}.{1}".format(args.database,
+        args.user_collection))
+    logger.info("Passed arguments: {0}".format(args))
 
     # Create Pymongo database client and connection
+    logger.debug("Connecting to MongoDB")
     mc = MongoClient(args.server, args.port)
     db = mc[args.database]
     if args.user and args.password:
@@ -176,6 +214,7 @@ if __name__ == "__main__":
     tweet_col = db[args.tweet_collection]
 
     # Create Tweepy API
+    logger.debug("Loading Twitter OAUTHs from {0}".format(args.oauthsfile))
     api = APIPool(oauths_filename=args.oauthsfile, debug=True)
 
     # Populate DB with user data
@@ -184,5 +223,6 @@ if __name__ == "__main__":
                          tweet_col,
                          args.num_tweets,
                          ensure_indexes=not args.no_indexes,
-                         requery=args.requery)
+                         requery=args.requery,
+                         update_threshold=args.update_threshold)
 
