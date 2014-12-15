@@ -3,9 +3,12 @@ Twitter error handling functions
 """
 
 import json
+import logging
 from ssl import SSLError
 from httplib import IncompleteRead
 from tweepy.error import TweepError
+
+logger = logging.getLogger(__name__)
 
 # Examples of crazy shit I'm seeing:
 # user_timeline endpoint:
@@ -13,8 +16,6 @@ from tweepy.error import TweepError
 # 
 # friends_ids and followers_ids endpoints    
 #[{'message': 'Rate limit exceeded', 'code': 88}]
-
-#[{u'message': u'Rate limit exceeded', u'code': 88}]
 
 def parse_tweepy_error(error):
     """
@@ -64,22 +65,20 @@ def call_with_error_handling(function, *args, **kwargs):
         3   - SSL Read timeout error
         4   - ValeError (eg: "No JSON object could be decoded")
     """
-    #TODO: Extend to consider as many twitter error codes as you have patience for
-    #TODO: (https://dev.twitter.com/docs/error-codes-responses)
     try:
        ret = function(*args, **kwargs)
     except TweepError as e:
         error_dict = parse_tweepy_error(e)
-        print ".. Error {0}: {1}".format(error_dict["code"], error_dict["message"])
+        logger.warning("Error {0}: {1}".format(error_dict["code"], error_dict["message"]))
         return (None, error_dict["code"])
     except IncompleteRead as i:
-        print ".. HTTPLib incomplete read error: {0}".format(i)
+        logger.warn("HTTPLib incomplete read error: {0}".format(i))
         return (None, 2)
     except SSLError as s:
-        print ".. SSL read timeout error: {0}".format(s)
+        logger.warn("SSL read timeout error: {0}".format(s))
         return (None, 3)
     except ValueError as v:
-        print ".. Value error (most likely JSON problem): {0}".format(v)
+        logger.warn("Value error (most likely JSON problem): {0}".format(v))
         return (None, 4)
 
     return (ret, 0)
