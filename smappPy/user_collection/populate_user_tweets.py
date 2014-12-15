@@ -83,6 +83,9 @@ def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user
             if return_code == 34:
                 logger.warn(".. User {0} no longer exists, skipping".format(user["id"]))
                 break
+            elif return_code == 179:
+                logger.warn(".. User {0}'s account is private, skipping".format(user["id"]))
+                break
             elif return_code != 0:
                 logger.warn(".. Error {0} for user {1}, skipping".format(return_code, user["id"]))
                 break
