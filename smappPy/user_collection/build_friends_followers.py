@@ -138,6 +138,7 @@ def populate_friends_from_collection(api, seed_collection, friend_collection, ed
         if "friends_count" in user and user["friends_count"] > friends_threshold:
             logger.info("User {0} has friends {1} above threshold {2}, skipping".format(
                 user["id"], user["friends_count"], friends_threshold))
+            continue
 
         r, friend_ids = get_friends_ids(api, user["id"])
         if _check_return_set_user(r, user, seed_collection):
@@ -214,6 +215,7 @@ def populate_followers_from_collection(api, seed_collection, follower_collection
         if "followers_count" in user and user["followers_count"] > followers_threshold:
             logger.info("User {0} has followers {1} above threshold {2}, skipping".format(
                 user["id"], user["followers_count"], followers_threshold))
+            continue
 
 
         r, follower_ids = get_followers_ids(api, user["id"])
