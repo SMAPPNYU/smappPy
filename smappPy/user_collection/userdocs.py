@@ -12,6 +12,8 @@ from smappPy.date import mongodate_to_datetime
 # Global of userdoc fields and functions that generate default values
 userdoc_fields_defaults = {
     "id": lambda: None,
+    "deleted": lambda: False,
+    "private": lambda: False,
     "random_number": lambda: random.random(),
     "created_at_timestamp": lambda: None,
     "updated_timestamp": lambda: datetime.now(),

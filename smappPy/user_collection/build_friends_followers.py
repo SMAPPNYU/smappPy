@@ -44,17 +44,17 @@ def get_friends_ids(api, user_id):
     Parameters:
         api     - fully authenticated Tweepy api or smappPy TweepyPool api
         user_id - twitter user id
-    Returns list of IDs or None (if API call fails)
+    Returns tuple: return code, list of IDs or None (if API call fails)
     """
     cursor = Cursor(api.friends_ids, user_id=user_id)
     user_list, ret_code = call_with_error_handling(list, cursor.items())
-
+   
     if ret_code != 0:
         logger.warning("User {0}: Friends request failed".format(user_id))
     
     # Return user list from API or None (call_with_error_handling returns None if
     # call fail)
-    return user_list
+    return ret_code, user_list
 
 
 def get_followers_ids(api, user_id):
@@ -64,7 +64,7 @@ def get_followers_ids(api, user_id):
     Parameters:
         api     - fully authenticated Tweepy api or smappPy TweepyPool api
         user_id - twitter user id
-    Returns list of IDs or None (if API call fails)
+    Returns tuple: return code, list of IDs or None (if API call fails)
     """
     cursor = Cursor(api.followers_ids, user_id=user_id)
     user_list, ret_code = call_with_error_handling(list, cursor.items())
@@ -74,7 +74,7 @@ def get_followers_ids(api, user_id):
     
     # Return user list from API or None (call_with_error_handling returns None if
     # call fail)
-    return user_list
+    return ret_code, user_list
 
 
 def populate_friends_from_collection(api, seed_collection, friend_collection, edge_collection=None,
@@ -121,6 +121,14 @@ def populate_friends_from_collection(api, seed_collection, friend_collection, ed
             print ".. Processing user {0} of {1}".format(user_it, user_count)
         user_it += 1
 
+        # Check user private/deleted fields - don't requery if unreachable
+        if "deleted" in user and user["deleted"] == True:
+            logging.info("User {0} deleted, skipping".format(user["id"]))
+            continue
+        elif "private" in user and user["private"] == True:
+            logging.info("User {0} private, skipping".format(user["id"]))
+            continue
+
         # Check requery. If false, and user has friend_ids, skip user
         if not requery and user["friend_ids"]:
             logger.debug("User {0} has friends, not re-querying".format(user["id"]))
@@ -131,7 +139,11 @@ def populate_friends_from_collection(api, seed_collection, friend_collection, ed
             logger.info("User {0} has friends {1} above threshold {2}, skipping".format(
                 user["id"], user["friends_count"], friends_threshold))
 
-        friend_ids = get_friends_ids(api, user["id"])
+        r, friend_ids = get_friends_ids(api, user["id"])
+        if _check_return_set_user(r, user, seed_collection):
+            logging.info("User {0} unreachable, skipping".format(user["id"]))
+            continue
+
         if friend_ids == None:
             friend_request_failed_for.append(user["id"])
             continue
@@ -185,6 +197,14 @@ def populate_followers_from_collection(api, seed_collection, follower_collection
             print ".. Processing user {0} of {1}".format(user_it, user_count)
         user_it += 1
 
+        # Check user private/deleted fields - don't requery if unreachable
+        if "deleted" in user and user["deleted"] == True:
+            logging.info("User {0} deleted, skipping".format(user["id"]))
+            continue
+        elif "private" in user and user["private"] == True:
+            logging.info("User {0} private, skipping".format(user["id"]))
+            continue
+
         # Check requery. If false, and user has follower_ids, skip user
         if not requery and user["follower_ids"]:
             logger.debug("User {0} has followers, not re-querying".format(user["id"]))
@@ -195,7 +215,12 @@ def populate_followers_from_collection(api, seed_collection, follower_collection
             logger.info("User {0} has followers {1} above threshold {2}, skipping".format(
                 user["id"], user["followers_count"], followers_threshold))
 
-        follower_ids = get_followers_ids(api, user["id"])
+
+        r, follower_ids = get_followers_ids(api, user["id"])
+        if _check_return_set_user(r, user, seed_collection):
+            logging.info("User {0} unreachable, skipping".format(user["id"]))
+            continue
+
         if follower_ids == None:
             follower_request_failed_for.append(user["id"])
             continue
@@ -239,6 +264,27 @@ def _get_user_sample(user_collection, user_sample, update_field, update_threshol
         users = user_collection.find(limit=int(user_count * user_sample), timeout=False)
 
     return users
+
+def _check_return_set_user(ret_val, user_doc, collection):
+    """
+    Checks return of get_friends/followers call. If specific error messages found,
+    (user DNE, user private, etc), sets and saves given userdoc and returns True.
+    Otherwise, returns false.
+    """
+    if ret_val == 34:
+        logger.info("User {0} no longer exists, updating userdoc".format(
+            user_doc["id"]))
+        user_doc["deleted"] = True
+        collection.save(user_doc)
+        return True
+    elif ret_val == 179:
+        logger.info("User {0} has private account, updating userdoc".format(
+            user_doc["id"]))
+        user_doc["private"] = True
+        collection.save(user_doc)
+        return True
+    return False
+
 
 def _save_userdocs(user_ids, collection):
     """Given a list of user IDs, save userdocs built from IDs to given collection"""
