@@ -368,6 +368,7 @@ if __name__ == "__main__":
     logfile = "{0}.{1}".format(args.database, args.seed_collection)
     logfile += ".Friends" if args.friends_collection else ""
     logfile += ".Followers" if args.followers_collection else ""
+    logfile += ".log"
 
     logger.setLevel(logging.DEBUG)
     fh = logging.FileHandler(filename=logfile)
