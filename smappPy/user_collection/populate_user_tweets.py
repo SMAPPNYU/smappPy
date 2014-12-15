@@ -25,8 +25,8 @@ from smappPy.tweet_util import add_random_to_tweet, add_timestamp_to_tweet
 
 BSON_NULL = 10
 
-#TODO: Add date cutoff (ie: only get tweets for users with 'tweets_updated' field
-#TODO: ealier/later than X)
+logger = logging.getLogger(__name__)
+
 
 def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user,
     ensure_indexes=True, requery=True, update_threshold=None):
@@ -188,7 +188,6 @@ if __name__ == "__main__":
     args.update_threshold = datetime(*args.update_threshold) if args.update_threshold else None
 
     # Set up logging
-    logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
     fh = logging.FileHandler(filename="{0}.{1}.Tweets.log".format(args.database, args.user_collection))
     fh.setLevel(logging.DEBUG)
