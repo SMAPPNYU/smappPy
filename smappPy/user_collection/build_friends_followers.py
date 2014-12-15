@@ -346,9 +346,16 @@ if __name__ == "__main__":
     parser.add_argument("-o", "--oauthsfile", required=True,
         help="Twitter oauths file. JSON file w/ LIST of app documents")
     parser.add_argument("-rq", "--requery", action="store_true", default=False,
-        help="Whether to query Twitter for frs/fols of users that already have frs/fols [False]")
+        help="Whether to query Twitter for frs/fols of users that already have" \
+        "frs/fols [False]")
     parser.add_argument("-ppe", "--print_progress_every", type=int,
         default=1000, help="Print progress every Nth user [1000]")
+    parser.add_argument("-frt", "--friends_threshold", type=int, default=20000,
+        help="Threshold. Do not query for friends of users with more friends than" \
+        "this number [20000]")
+    parser.add_argument("-fot", "--followers_threshold", type=int, default=20000,
+        help="Threshold. Do not query for followers of users with more followers than" \
+        "this number [20000]")
     parser.add_argument("-ut", "--update_threshold", type=int, nargs=5, default=None,
         help="If present, only users with friends/followers_updated timestamp BEFORE " \
         "given value will be updated. Format is five numbers, space-separated: " \
@@ -393,6 +400,7 @@ if __name__ == "__main__":
         friend_collection = database[args.friends_collection]
         populate_friends_from_collection(api, seed_collection, friend_collection, 
             edge_collection=edge_collection, user_sample=1.0, requery=args.requery,
+            friends_threshold=args.friends_threshold,
             update_threshold=args.update_threshold,
             print_progress_every=args.print_progress_every)
         logger.info("Friends complete")
@@ -403,6 +411,7 @@ if __name__ == "__main__":
         follower_collection = database[args.followers_collection]
         populate_followers_from_collection(api, seed_collection, follower_collection, 
             edge_collection=edge_collection, user_sample=1.0, requery=args.requery,
+            followers_threshold=args.followers_threshold,
             update_threshold=args.update_threshold,
             print_progress_every=args.print_progress_every)
         logger.info("Followers complete")
