@@ -7,7 +7,7 @@ Functions and docstrings parsed directly by the web dashboard for adding these t
 2014/11/19 @jonathanronen
 """
 
-def field_contains(tweet, field, *terms, case_sensitive=False):
+def field_contains(tweet, field, *terms, **kwargs):
     """
     Returns true if the text in tweet[field] contains any of the terms given.
     By default, this function is NOT case-sensitive.
@@ -29,7 +29,7 @@ def field_contains(tweet, field, *terms, case_sensitive=False):
     value = tweet
     for p in path:
         value = value[p]
-    if case_sensitive:
+    if kwargs.get("case_sensitive", False):
         return any(term in value for term in terms)
     else:
         value = value.lower()
