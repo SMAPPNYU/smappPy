@@ -19,7 +19,7 @@ start = datetime(2010,1,1)   # Time in UTC
 step_size = timedelta(days=10)     # Time step to observe (timedelta(hours=1))
 num_steps = 200                    # Number of steps to plot
 
-client = MongoClient("smapp-data.bio.nyu.edu", 27011)   # Dataserver host, port
+client = MongoClient("smapp-politics", 27011)   # Dataserver host, port
 database = client["USLegislator"]                            # Database
 collection = database["tweets"]                         # Tweet collection
 
