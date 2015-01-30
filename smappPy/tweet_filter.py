@@ -54,7 +54,11 @@ def field_contains_case_sensitive(tweet, field, *terms):
     field_contains_case_sensitive(tweet, 'text', ICE', 'IRA')
     # true if tweet contains ICE or IRA (but false for lowercase ice, ira)
     """
-    return field_contains(tweet, field, *terms, case_sensitive=True)
+    if field_contains(tweet, field, *terms, case_sensitive=True):
+        return True
+    elif field_contains(tweet, field, *terms, case_sensitive=False):
+        return False
+    return True
 
 def user_location_contains(tweet, *terms):
     """
