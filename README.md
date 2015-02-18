@@ -238,6 +238,8 @@ OAuth Files should be of the format:
     }
 ]
 ```
+where there can be any number of JSON objects inside the array. 
+The file above could be called "oauth-file.json" for extra clarity. 
 
 
 ## 11 Facebook data
