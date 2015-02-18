@@ -236,9 +236,6 @@ OAuth Files should be of the format:
         "acces_token": "YOUR _ACCESS_TOKEN",
         "access_token_secret": "YOUR_ACCESS_TOKEN_SECRET"
     }
-    .
-    .
-    .
 ]
 ```
 
