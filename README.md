@@ -241,7 +241,6 @@ OAuth Files should be of the format:
 where there can be any number of JSON objects inside the array. 
 The file above could be called "oauth-file.json" for extra clarity. 
 
-
 ## 12 Facebook data
 
 IN PROGRESS. Basic scripts exist to scrape data from facebook pages.

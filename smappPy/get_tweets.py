@@ -52,20 +52,20 @@ def user_tweets(api, user_id=None, screen_name=None, limit=None):
 
 def geo_tweets(api, geoloc_list=None, single_geoloc=None, granularity=None, limit=None):
     """
-    Queries Twitter REST API for tweets based on a set of bounding coordinates or 
-    a list of sets of bounding coordinates.
-    Takes an authenticated API object(API or APIPool), 
-    (not both), and an optional limit for the number of tweets returned.
+    Queries Twitter REST API for tweets based on a name of a place or a list of place names.
+    Takes an authenticated API object(API or APIPool not both), and an optional 
+    limit for the number of tweets returned.
     Takes either a list of Geo locations (placenames) or a single geolocation.
-    Also takes teh granularity, this can be omitted but should be included for 
-    more accurate twitter queries.
+    Also takes the granularity (city, admin or country), this can be omitted but 
+    should be included for more accurate twitter queries. In the future it would 
+    be nice to be able to take different granularities for different places in a 
+    geoloc_list.
     It is crucial to note that for a geoloc_list the limit applies to each
     geolocation, and not over all geolocations. 
     For example a query to ["Kyiv", "San Francisco"] would have a limit of 5
     for the first query to Kyiv and 5 for the second query to San Francisco.
     Returns an array whose elements are equivalent to the combined
-    place_cursor.items() calls of all the places in the list.
-    I'm not sure how you 
+    cursor.items() calls of all the places in the list.
     """
 
     locations = []
@@ -73,24 +73,39 @@ def geo_tweets(api, geoloc_list=None, single_geoloc=None, granularity=None, limi
         raise Exception("Hey hotshot slow down! You're missing a geoloc_list or single_geoloc input.")
     if geoloc_list:
         for place in geoloc_list:
-            placeid_search = api.geo_search(query=place, max_results=limit)
+            placeid_search = api.geo_search(query=place, max_results=limit, granularity=granularity)
             place_id = placeid_search[0].id # 0 gets the most likely place, not error proof
-            tweets_from_place = query_tweets(api, "place:%s" % place_id, limit=limit)
+            tweets_from_place = query_tweets(api, query="place:%s" % place_id, limit=limit)
             locations.extend(tweets_from_place)
     elif single_geoloc:
-        placeid_search = api.geo_search(query=single_geoloc, max_results=limit)
+        placeid_search = api.geo_search(query=single_geoloc, max_results=limit, granularity=granularity)
         place_id = placeid_search[0].id # 0 gets the most likely place, not error proof
         tweets_from_place = query_tweets(api, query="place:%s" % place_id, limit=limit)
         locations.extend(tweets_from_place)
     return locations
 
 
-def countrycode_tweets():
+def geocode_tweets(api, geocode_list=None, single_geocode=None, limit=None):
     """
     Queries Twitter REST API for tweets within a certain country or region's geocode.
-    Takes an authenticated API object (API or APIPool), on of u
+    Takes an authenticated API object (API or APIPool), a  geocode for the desired
+    region, and a limit on the number of queries for each geocode.
+    Returns an array whose elements are equivalent to the combined
+    cursor.items() calls of all the places in the list.
+    Essentially the same as the geo_tweets method above but
+    takes a code and not a place name.
     """
-    raise NotImplementedError()
+    locations = []
+    if not(single_geocode or geocode_list):
+        raise Exception("Hey city slicker! You're missing a geocode input.")
+    elif geocode_list:
+        for single_geocode in geocode_list:
+            tweets_from_place = query_tweets(api, query="place:%s" % single_geocode, limit=limit)
+            locations.extend(tweets_from_place)
+    elif single_geocode:
+        tweets_from_place = query_tweets(api, query="place:%s" % single_geocode, limit=limit)
+        locations.extend(tweets_from_place)
+    return locations
 
 def tweets_from_file(tweetfile):
     """
