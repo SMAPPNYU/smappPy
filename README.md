@@ -218,6 +218,29 @@ friends, followers, etc)
     visualization.topic_barchart(corpus, model, topic_threshold, show, outfile, bar_width, trim)
                                                             # Creates, shows, and saves a barchart representing topic occurence in all corpus docs (if topic is >= threshold for that doc)
 
+##File Formats
+
+OAuth Files should be of the format:
+
+```json
+[
+    {
+        "consumer_key": "YOUR_CONSUMER_KEY",
+        "consumer_secret": "YOUR_CONSUMER_SECRET",
+        "acces_token": "YOUR _ACCESS_TOKEN",
+        "access_token_secret": "YOUR_ACCESS_TOKEN_SECRET"
+    },
+    {
+        "consumer_key": "YOUR_CONSUMER_KEY",
+        "consumer_secret": "YOUR_CONSUMER_SECRET",
+        "acces_token": "YOUR _ACCESS_TOKEN",
+        "access_token_secret": "YOUR_ACCESS_TOKEN_SECRET"
+    }
+    .
+    .
+    .
+]
+```
 
 
 ## 11 Facebook data

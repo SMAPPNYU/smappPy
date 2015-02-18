@@ -1,14 +1,13 @@
 """
 Functions for getting tweets from Twitter (via REST API), file, and database
 
-@auth dpb
-@date 2/24/2014
+@auth dpb and yns
+@date 2/17/2015
 """
 
 from bson.json_util import loads
 from tweepy import Cursor, TweepError
 from json_util import ConcatJSONDecoder
-
 
 def _check_limit(limit):
     """Checks common 'limit' param to see if is int. Exception if not"""
@@ -51,10 +50,47 @@ def user_tweets(api, user_id=None, screen_name=None, limit=None):
     return cursor.items()
     
 
-def geo_tweets():
-    """"""
-    raise NotImplementedError()
+def geo_tweets(api, geoloc_list=None, single_geoloc=None, granularity=None, limit=None):
+    """
+    Queries Twitter REST API for tweets based on a set of bounding coordinates or 
+    a list of sets of bounding coordinates.
+    Takes an authenticated API object(API or APIPool), 
+    (not both), and an optional limit for the number of tweets returned.
+    Takes either a list of Geo locations (placenames) or a single geolocation.
+    Also takes teh granularity, this can be omitted but should be included for 
+    more accurate twitter queries.
+    It is crucial to note that for a geoloc_list the limit applies to each
+    geolocation, and not over all geolocations. 
+    For example a query to ["Kyiv", "San Francisco"] would have a limit of 5
+    for the first query to Kyiv and 5 for the second query to San Francisco.
+    Returns an array whose elements are equivalent to the combined
+    place_cursor.items() calls of all the places in the list.
+    I'm not sure how you 
+    """
 
+    locations = []
+    if not (geoloc_list or single_geoloc):
+        raise Exception("Hey hotshot slow down! You're missing a geoloc_list or single_geoloc input.")
+    if geoloc_list:
+        for place in geoloc_list:
+            placeid_search = api.geo_search(query=place, max_results=limit)
+            place_id = placeid_search[0].id # 0 gets the most likely place, not error proof
+            tweets_from_place = query_tweets(api, "place:%s" % place_id, limit=limit)
+            locations.extend(tweets_from_place)
+    elif single_geoloc:
+        placeid_search = api.geo_search(query=single_geoloc, max_results=limit)
+        place_id = placeid_search[0].id # 0 gets the most likely place, not error proof
+        tweets_from_place = query_tweets(api, query="place:%s" % place_id, limit=limit)
+        locations.extend(tweets_from_place)
+    return locations
+
+
+def countrycode_tweets():
+    """
+    Queries Twitter REST API for tweets within a certain country or region's geocode.
+    Takes an authenticated API object (API or APIPool), on of u
+    """
+    raise NotImplementedError()
 
 def tweets_from_file(tweetfile):
     """
