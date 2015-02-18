@@ -218,7 +218,7 @@ friends, followers, etc)
     visualization.topic_barchart(corpus, model, topic_threshold, show, outfile, bar_width, trim)
                                                             # Creates, shows, and saves a barchart representing topic occurence in all corpus docs (if topic is >= threshold for that doc)
 
-##File Formats
+## 11 File Formats
 
 OAuth Files should be of the format:
 
@@ -242,7 +242,7 @@ where there can be any number of JSON objects inside the array.
 The file above could be called "oauth-file.json" for extra clarity. 
 
 
-## 11 Facebook data
+## 12 Facebook data
 
 IN PROGRESS. Basic scripts exist to scrape data from facebook pages.
 
