@@ -62,7 +62,42 @@ We also use the [pip](http://www.pip-installer.org/en/latest/) package managemen
     
     keyword_tweets(oauth_file, keyword_list, limit_per_keyword)
     user_tweets(oauth_file, userid_list, limit_per_user)
-    geo_tweets(oauth_file, geoloc_list, limit_per_location)
+    geo_tweets(oauth_file, geoloc_list, query, limit_per_location)
+
+Usage of geo_tweets and georadius_tweets:
+
+```python
+
+#import smappPy.get_tweets as smapp
+
+tweets_single_location = smapp.geo_tweets(api, query="Coffee", single_geoloc=["Manchester"], limit=1)
+
+tweets_many_locations = smapp.geo_tweets(api, query="Coffee", geoloc_list=[["Glasgow"], ["Dublin"]], limit=1)
+
+tweets_georadius_single = smapp.georadius_tweets(api, query="Coffee", single_georadius=[37.781157,-122.398720,"1mi"], limit=1)
+
+tweets_georadius_multiple = smapp.georadius_tweets(api, query="Coffee",georadius_list=[[32.781830, -96.795860,"1mi"], [37.781157,-122.398720,"1mi"]], limit=1)
+
+for item in tweets_single_location:
+    print("Single Geoloc Manchester Tweet:")
+    print(item)
+
+for item in tweets_many_locations:
+    print("Mult Geoloc Scotland/Ireland Tweet:")
+    print(item)
+
+for item in tweets_georadius_single:
+    print("Tweet from Single Georadius:")
+    print(item)
+
+for item in tweets_georadius_multiple:
+    print("Tweet from Multiple Georadius:")
+    print(item)
+
+```
+the "query" parameter is optional and can be omitted. If run with a query, it will only pull
+tweets about query="Coffee" from the coordinates and radii you give it. If left blank I assume 
+you will be pulling the top tweets or some sudo-random kinds of tweets.
 
 These methods query twitter via the REST interface (single-transaction. NOT STREAMING)
 
