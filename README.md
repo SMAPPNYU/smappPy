@@ -64,11 +64,15 @@ We also use the [pip](http://www.pip-installer.org/en/latest/) package managemen
     user_tweets(oauth_file, userid_list, limit_per_user)
     geo_tweets(oauth_file, geoloc_list, query, limit_per_location)
 
+These methods query twitter via the REST interface (single-transaction. NOT STREAMING)
+
+*Note: calling these methods can incur a rate limit exception, in the case that too many requests have been made to the Twitter API. This is left for the user to handle. An example will be provided of how to do so.*
+
 Usage of geo_tweets and georadius_tweets:
 
 ```python
 
-#import smappPy.get_tweets as smapp
+import smappPy.get_tweets as smapp
 
 tweets_single_location = smapp.geo_tweets(api, query="Coffee", single_geoloc=["Manchester"], limit=1)
 
@@ -98,10 +102,6 @@ for item in tweets_georadius_multiple:
 the "query" parameter is optional and can be omitted. If run with a query, it will only pull
 tweets about query="Coffee" from the coordinates and radii you give it. If left blank I assume 
 you will be pulling the top tweets or some sudo-random kinds of tweets.
-
-These methods query twitter via the REST interface (single-transaction. NOT STREAMING)
-
-*Note: calling these methods can incur a rate limit exception, in the case that too many requests have been made to the Twitter API. This is left for the user to handle. An example will be provided of how to do so.*
 
 ### smappPy.streaming:
 
