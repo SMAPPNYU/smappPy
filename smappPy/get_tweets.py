@@ -8,7 +8,6 @@ Functions for getting tweets from Twitter (via REST API), file, and database
 from bson.json_util import loads
 from tweepy import Cursor, TweepError
 from json_util import ConcatJSONDecoder
-from geo_tweet import check_geobox
 
 def _check_limit(limit):
     """Checks common 'limit' param to see if is int. Exception if not"""
@@ -108,7 +107,7 @@ def georadius_tweets(api, georadius_list=None, single_georadius=None, query=None
 
         for i in range(0, len(single_georadius)):
             single_georadius[i] = str(single_georadius[i])
-            
+
         tweets_from_place = query_tweets(api, query=query+"&geocode:%s" % ",".join(single_georadius), limit=limit)
         locations.extend(tweets_from_place)
     return locations
