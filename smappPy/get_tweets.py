@@ -48,7 +48,7 @@ def user_tweets(api, user_id=None, screen_name=None, limit=None):
         return cursor.items(limit)
     return cursor.items()
 
-def geo_tweets(api, geoloc_list=None, single_geoloc=None, query=None, granularity=None, limit=None):
+def geo_tweets(api, geoloc_list=None, single_geoloc=None, query="", granularity=None, limit=None):
     """
     Queries Twitter REST API for tweets based on a name of a place or a list of place names.
     Takes an authenticated API object(API or APIPool not both), and an optional 
@@ -67,7 +67,7 @@ def geo_tweets(api, geoloc_list=None, single_geoloc=None, query=None, granularit
     """
 
     locations = []
-    if not (geoloc_list or single_geoloc or query):
+    if not (geoloc_list or single_geoloc):
         raise Exception("Hey hotshot slow down! You're missing a geoloc_list, single_geoloc, or query input.")
     if geoloc_list:
         for place in geoloc_list:
@@ -82,7 +82,7 @@ def geo_tweets(api, geoloc_list=None, single_geoloc=None, query=None, granularit
         locations.extend(tweets_from_place)
     return locations
 
-def georadius_tweets(api, georadius_list=None, single_georadius=None, query=None, limit=None):
+def georadius_tweets(api, georadius_list=None, single_georadius=None, query="", limit=None):
     """
     Queries Twitter REST API for tweets within a box of bounding cooridnates.
     Takes an authenticated API object (API or APIPool), and a geo-object which
@@ -94,7 +94,7 @@ def georadius_tweets(api, georadius_list=None, single_georadius=None, query=None
     locations = []
     if not(single_georadius or georadius_list):
         raise Exception("Hey city slicker! You're missing a single_georadius or geobox_list input.")
-        
+
     elif georadius_list:
         for georadius in georadius_list:
 
