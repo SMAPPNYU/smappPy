@@ -94,6 +94,7 @@ def georadius_tweets(api, georadius_list=None, single_georadius=None, query=None
     locations = []
     if not(single_georadius or georadius_list):
         raise Exception("Hey city slicker! You're missing a single_georadius or geobox_list input.")
+        
     elif georadius_list:
         for georadius in georadius_list:
 
