@@ -36,8 +36,8 @@ USTopTen_DiftStates = [GeoBox_NewYork, GeoBox_LosAngeles, GeoBox_Chicago,
     GeoBox_Houston, GeoBox_Philadelphia, GeoBox_Phoenix, GeoBox_Indianapolos, 
     GeoBox_Jacksonville, GeoBox_Columbus, GeoBox_Charlotte]
 
-ContinentsGeoBoxes = [GeoBox_NorthAmerica, GeoBox_SouthAmerica, GeoBox_Europe, 
-    GeoBox_Asia, GeoBox_MiddleEast, GeoBox_Africa, GeoBox_SouthPacific]
+ContinentsGeoBoxes = [GeoBox_NorthAmerica, GeoBox_SouthAmerica, GeoBox_Europe,
+GeoBox_Asia, GeoBox_MiddleEast, GeoBox_Africa, GeoBox_SouthPacific]
 
 
 ContinentCode = {
