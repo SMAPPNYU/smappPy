@@ -74,13 +74,13 @@ Usage of place_tweets and georadius_tweets:
 
 import smappPy.get_tweets as smapp
 
-locations = smapp_get_tweets.place_tweets(api, query="Coffee", place_list=["Manchester"], limit=1)
+locations = smapp.place_tweets(api, query="Coffee", place_list=["Manchester"], limit=1)
 
-locations_mult = smapp_get_tweets.place_tweets(api, query="Coffee", place_list=["Glasgow", "Dublin"], limit=1)
+locations_mult = smapp.place_tweets(api, query="Coffee", place_list=["Glasgow", "Dublin"], limit=1)
 
-locations_from_georadius_single = smapp_get_tweets.georadius_tweets(api, query="Coffee",  georadius_list=[[37.781157,-122.398720,"1mi"]], limit=1)
+locations_from_georadius_single = smapp.georadius_tweets(api, query="Coffee",  georadius_list=[[37.781157,-122.398720,"1mi"]], limit=1)
 
-locations_from_georadius_multiple = smapp_get_tweets.georadius_tweets(api, query="Coffee", georadius_list=[[32.781830, -96.795860,"1mi"], [37.781157,-122.398720,"1mi"]], limit=1)
+locations_from_georadius_multiple = smapp.georadius_tweets(api, query="Coffee", georadius_list=[[32.781830, -96.795860,"1mi"], [37.781157,-122.398720,"1mi"]], limit=1)
 
 for iterator in locations:
     for item in iterator:
