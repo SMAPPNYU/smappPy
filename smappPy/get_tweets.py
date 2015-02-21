@@ -14,7 +14,6 @@ def _check_limit(limit):
     if type(limit) != int:
         raise Exception("Limit ({0}) must be an integer".format(limit))
 
-
 def query_tweets(api, query, limit=None, languages=None):
     """
     Queries twitter REST API for tweets matching given twitter search 'query'.
@@ -48,70 +47,53 @@ def user_tweets(api, user_id=None, screen_name=None, limit=None):
         return cursor.items(limit)
     return cursor.items()
 
-def geo_tweets(api, geoloc_list=None, single_geoloc=None, query="", granularity=None, limit=None):
+def place_tweets(api, place_list=None, query="", granularity=None, limit=None):
     """
     Queries Twitter REST API for tweets based on a name of a place or a list of place names.
     Takes an authenticated API object(API or APIPool not both), and an optional 
     limit for the number of tweets returned.
-    Takes either a list of Geo locations (placenames) or a single geolocation.
-    Also takes the granularity (city, admin or country), this can be omitted but 
-    should be included for more accurate twitter queries. In the future it would 
-    be nice to be able to take different granularities for different places in a 
-    geoloc_list.
-    It is crucial to note that for a geoloc_list the limit applies to each
-    geolocation, and not over all geolocations. 
+    Takes a place_list of names of places in the world. 
+    It is crucial to note that for a place_list the limit applies to each
+    location, and not over all locations. 
     For example a query to ["Kyiv", "San Francisco"] would have a limit of 5
     for the first query to Kyiv and 5 for the second query to San Francisco.
-    Returns an array whose elements are equivalent to the combined
-    cursor.items() calls of all the places in the list.
+    Returns an array whose elements are iterators over the elements of each 
+    place in the original place_list.
+    ["Kyiv", "San Francisco"] returns[Kyiv_Iterator_Obj, SanFrancisco_Iterator_Obj]
     """
+    locations_cursors = []
+    if not (place_list):
+        raise Exception("Hey hotshot slow down! You're missing a place_list input.")
 
-    locations = []
-    if not (geoloc_list or single_geoloc):
-        raise Exception("Hey hotshot slow down! You're missing a geoloc_list, single_geoloc, or query input.")
-    if geoloc_list:
-        for place in geoloc_list:
-            placeid_search = api.geo_search(query=place, max_results=limit, granularity=granularity)
-            place_id = placeid_search[0].id # 0 gets the most likely place, not error proof
-            tweets_from_place = query_tweets(api, query=query+"&place:%s" % place_id, limit=limit)
-            locations.extend(tweets_from_place)
-    elif single_geoloc:
-        placeid_search = api.geo_search(query=single_geoloc, max_results=limit, granularity=granularity)
+    for place in place_list:
+        placeid_search = api.geo_search(query=place, max_results=limit, granularity=granularity)
         place_id = placeid_search[0].id # 0 gets the most likely place, not error proof
         tweets_from_place = query_tweets(api, query=query+"&place:%s" % place_id, limit=limit)
-        locations.extend(tweets_from_place)
-    return locations
+        locations_cursors.append(tweets_from_place)
 
-def georadius_tweets(api, georadius_list=None, single_georadius=None, query="", limit=None):
+    return locations_cursors
+
+def georadius_tweets(api, georadius_list=None, query="", limit=None):
     """
-    Queries Twitter REST API for tweets within a box of bounding cooridnates.
+    Queries Twitter REST API for tweets within a radius of two coordinates.
     Takes an authenticated API object (API or APIPool), and a geo-object which
     two coordinates and a radius or a list of geo-objects , and a limit on 
-    the number of queries for each box.
-    Returns an array whose elements are equivalent to the combined
-    cursor.items() calls of all the boxes in the list.
+    the number of queries for each georadius.
+    Returns a list whose elements are iterators over the results from each
+    provided georadius.
     """
-    locations = []
-    if not(single_georadius or georadius_list):
-        raise Exception("Hey city slicker! You're missing a single_georadius or geobox_list input.")
+    locations_iterators = []
+    if not(georadius_list):
+        raise Exception("Hey city slicker! You're missing a georadius_list input.")
+    
+    for georadius in georadius_list:
+        for i in range(0, len(georadius)):
+            georadius[i] = str(georadius[i])
 
-    elif georadius_list:
-        for georadius in georadius_list:
+        tweets_from_place = query_tweets(api, query=query+"&geocode:%s" % ",".join(georadius), limit=limit)
+        locations_iterators.append(tweets_from_place)
 
-            for i in range(0, len(georadius)):
-                georadius[i] = str(georadius[i])
-
-            tweets_from_place = query_tweets(api, query=query+"&geocode:%s" % ",".join(georadius), limit=limit)
-            locations.extend(tweets_from_place)
-
-    elif single_georadius:
-
-        for i in range(0, len(single_georadius)):
-            single_georadius[i] = str(single_georadius[i])
-
-        tweets_from_place = query_tweets(api, query=query+"&geocode:%s" % ",".join(single_georadius), limit=limit)
-        locations.extend(tweets_from_place)
-    return locations
+    return locations_iterators
 
 def tweets_from_file(tweetfile):
     """
