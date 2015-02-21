@@ -78,7 +78,7 @@ locations = smapp.place_tweets(api, query="Coffee", place_list=["Manchester"], l
 
 locations_mult = smapp.place_tweets(api, query="Coffee", place_list=["Glasgow", "Dublin"], limit=1)
 
-locations_from_georadius_single = smapp.georadius_tweets(api, query="Coffee",  georadius_list=[[37.781157,-122.398720,"1mi"]], limit=1)
+locations_from_georadius_single = smapp.georadius_tweets(api, query="Coffee",  georadius_list=[[37.781157,-122.398720,"1mi"]], limit=1)#geo_radius list must be a nested list, even for a single list
 
 locations_from_georadius_multiple = smapp.georadius_tweets(api, query="Coffee", georadius_list=[[32.781830, -96.795860,"1mi"], [37.781157,-122.398720,"1mi"]], limit=1)
 
