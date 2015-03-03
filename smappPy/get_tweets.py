@@ -71,7 +71,7 @@ def place_tweets(api, place_list=None, query="", granularity=None, limit=None):
         tweets_from_place = query_tweets(api, query=query+"&place:%s" % place_id, limit=limit)
         locations_cursors.append(tweets_from_place)
 
-    return locations_cursors
+    return iter(locations_cursors)
 
 def georadius_tweets(api, georadius_list=None, query="", limit=None):
     """
@@ -93,7 +93,7 @@ def georadius_tweets(api, georadius_list=None, query="", limit=None):
         tweets_from_place = query_tweets(api, query=query+"&geocode:%s" % ",".join(georadius), limit=limit)
         locations_iterators.append(tweets_from_place)
 
-    return locations_iterators
+    return iter(locations_iterators)
 
 def tweets_from_file(tweetfile):
     """
