@@ -61,7 +61,7 @@ def place_tweets(api, place_list=None, query="", granularity=None, limit=None):
     place in the original place_list.
     ["Kyiv", "San Francisco"] returns[Kyiv_Iterator_Obj, SanFrancisco_Iterator_Obj]
     """
-    locations_cursors = []
+    locations_iterators = []
     if not (place_list):
         raise Exception("Hey hotshot slow down! You're missing a place_list input.")
 
@@ -69,9 +69,9 @@ def place_tweets(api, place_list=None, query="", granularity=None, limit=None):
         placeid_search = api.geo_search(query=place, max_results=limit, granularity=granularity)
         place_id = placeid_search[0].id # 0 gets the most likely place, not error proof
         tweets_from_place = query_tweets(api, query=query+"&place:%s" % place_id, limit=limit)
-        locations_cursors.append(tweets_from_place)
+        locations_iterators.append(tweets_from_place)
 
-    return iter(locations_cursors)
+    return iter(locations_iterators)
 
 def georadius_tweets(api, georadius_list=None, query="", limit=None):
     """
