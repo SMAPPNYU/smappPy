@@ -36,6 +36,9 @@ USTopTen_DiftStates = [GeoBox_NewYork, GeoBox_LosAngeles, GeoBox_Chicago,
     GeoBox_Houston, GeoBox_Philadelphia, GeoBox_Phoenix, GeoBox_Indianapolos, 
     GeoBox_Jacksonville, GeoBox_Columbus, GeoBox_Charlotte]
 
+ContinentsGeoBoxes = [GeoBox_NorthAmerica, GeoBox_SouthAmerica, GeoBox_Europe,
+GeoBox_Asia, GeoBox_MiddleEast, GeoBox_Africa, GeoBox_SouthPacific]
+
 
 ContinentCode = {
     -1: "Unknown",
@@ -78,13 +81,7 @@ def get_coordinates(tweet):
         return tweet["geo"]["coordinates"]
 
 
-def get_tweet_region(tweet, regions=[GeoBox_NorthAmerica, 
-                                     GeoBox_SouthAmerica, 
-                                     GeoBox_Europe, 
-                                     GeoBox_Asia, 
-                                     GeoBox_MiddleEast, 
-                                     GeoBox_Africa, 
-                                     GeoBox_SouthPacific]):
+def get_tweet_region(tweet, regions=ContinentsGeoBoxes):
     """Takes a tweet and hierarchically tries to match it's geocode to a region.
     If tweet is not geocoded, returns -1 ("Unknown"). If is geocoded but does 
     not match any region provided, returns -1 ("Unknown").

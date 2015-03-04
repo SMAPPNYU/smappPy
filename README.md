@@ -62,11 +62,35 @@ We also use the [pip](http://www.pip-installer.org/en/latest/) package managemen
     
     keyword_tweets(oauth_file, keyword_list, limit_per_keyword)
     user_tweets(oauth_file, userid_list, limit_per_user)
-    geo_tweets(oauth_file, geoloc_list, limit_per_location)
+    place_tweets(oauth_file, place_list, query, limit_per_location)
+    georadius_tweets(oauth_file, georadius_list, query, limit_per_location)
 
 These methods query twitter via the REST interface (single-transaction. NOT STREAMING)
 
 *Note: calling these methods can incur a rate limit exception, in the case that too many requests have been made to the Twitter API. This is left for the user to handle. An example will be provided of how to do so.*
+
+Usage of place_tweets and georadius_tweets:
+
+```python
+
+from smappPy.get_tweets import place_tweets, georadius_tweets
+
+for tweet in place_tweets(api, place_list=["Manchester"], query="Coffee", limit=1):
+    print(tweet)
+
+for tweet in place_tweets(api, place_list=["Glasgow", "Dublin"], query="Coffee", limit=1):
+    print(tweet)
+
+for tweet in georadius_tweets(api, georadius_list=[[37.781157,-122.398720,"1mi"]], query="Coffee", limit=1):
+    print(tweet)
+
+for tweet in georadius_tweets(api, georadius_list=[[32.781830, -96.795860,"1mi"], [37.781157,-122.398720,"1mi"]], query="Coffee", limit=1):
+    print(tweet)
+
+```
+the "query" parameter is optional and can be omitted. If run with a query="Coffee", it will only pull
+tweets about query="Coffee" from the coordinates and radii you give it. If left blank I assume 
+you will be pulling the top tweets or some sudo-random kinds of tweets.
 
 ### smappPy.streaming:
 
@@ -218,9 +242,30 @@ friends, followers, etc)
     visualization.topic_barchart(corpus, model, topic_threshold, show, outfile, bar_width, trim)
                                                             # Creates, shows, and saves a barchart representing topic occurence in all corpus docs (if topic is >= threshold for that doc)
 
+## 11 File Formats
 
+OAuth Files should be of the format:
 
-## 11 Facebook data
+```json
+[
+    {
+        "consumer_key": "YOUR_CONSUMER_KEY",
+        "consumer_secret": "YOUR_CONSUMER_SECRET",
+        "acces_token": "YOUR _ACCESS_TOKEN",
+        "access_token_secret": "YOUR_ACCESS_TOKEN_SECRET"
+    },
+    {
+        "consumer_key": "YOUR_CONSUMER_KEY",
+        "consumer_secret": "YOUR_CONSUMER_SECRET",
+        "acces_token": "YOUR _ACCESS_TOKEN",
+        "access_token_secret": "YOUR_ACCESS_TOKEN_SECRET"
+    }
+]
+```
+where there can be any number of JSON objects inside the array. 
+The file above could be called "oauth-file.json" for extra clarity. 
+
+## 12 Facebook data
 
 IN PROGRESS. Basic scripts exist to scrape data from facebook pages.
 
