@@ -1,20 +1,18 @@
 """
 Functions for getting tweets from Twitter (via REST API), file, and database
 
-@auth dpb
-@date 2/24/2014
+@auth dpb and yns
+@date 2/17/2015
 """
 
 from bson.json_util import loads
 from tweepy import Cursor, TweepError
 from json_util import ConcatJSONDecoder
 
-
 def _check_limit(limit):
     """Checks common 'limit' param to see if is int. Exception if not"""
     if type(limit) != int:
         raise Exception("Limit ({0}) must be an integer".format(limit))
-
 
 def query_tweets(api, query, limit=None, languages=None):
     """
@@ -29,7 +27,6 @@ def query_tweets(api, query, limit=None, languages=None):
         _check_limit(limit)
         return cursor.items(limit)
     return cursor.items()
-
 
 def user_tweets(api, user_id=None, screen_name=None, limit=None):
     """
@@ -49,12 +46,45 @@ def user_tweets(api, user_id=None, screen_name=None, limit=None):
         _check_limit(limit)
         return cursor.items(limit)
     return cursor.items()
+
+def place_tweets(api, place_list=None, query="", granularity=None, limit=None):
+    """
+    Queries Twitter REST API for tweets based on a name of a place or a list of place names.
+    Takes an authenticated API object(API or APIPool not both), and an optional 
+    limit for the number of tweets returned.
+    Takes a place_list of names of places in the world. 
+    It is crucial to note that for a place_list the limit applies to each
+    location, and not over all locations. 
+    For example a query to ["Kyiv", "San Francisco"] would have a limit of 5
+    for the first query to Kyiv and 5 for the second query to San Francisco.
+    Returns an array whose elements are iterators over the elements of each 
+    place in the original place_list.
+    ["Kyiv", "San Francisco"] returns[Kyiv_Iterator_Obj, SanFrancisco_Iterator_Obj]
+    """
+
+    if not (place_list):
+        raise Exception("Hey hotshot slow down! You're missing a place_list input.")
+
+    locations_iterators = (query_tweets(api, query=query+"&place:%s" % api.geo_search(query=place, max_results=limit, granularity=granularity)[0].id, limit=limit) 
+                        for place in place_list)
+    return (tweet for it in locations_iterators for tweet in it)
+
+def georadius_tweets(api, georadius_list=None, query="", limit=None):
+    """
+    Queries Twitter REST API for tweets within a radius of two coordinates.
+    Takes an authenticated API object (API or APIPool), and a geo-object which
+    two coordinates and a radius or a list of geo-objects , and a limit on 
+    the number of queries for each georadius.
+    Returns a list whose elements are iterators over the results from each
+    provided georadius.
+    """
+
+    if not(georadius_list):
+        raise Exception("Hey city slicker! You're missing a georadius_list input.")
     
-
-def geo_tweets():
-    """"""
-    raise NotImplementedError()
-
+    locations_iterators = (query_tweets(api, query=query+"&geocode:%s" % ",".join(str(elem) for elem in georadius), limit=limit) 
+                        for georadius in georadius_list)
+    return (tweet for it in locations_iterators for tweet in it)
 
 def tweets_from_file(tweetfile):
     """
