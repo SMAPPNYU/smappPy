@@ -257,17 +257,21 @@ def translate_punctuation(text):
     return text
 
 def remove_all_punctuation(text, keep_hashtags=False, keep_mentions=False):
-    """Does a strict remove of anything that is not a letter or digit char"""
+    """
+    Does a strict remove of anything that is not a character in the Unicode character
+    properties database, any whitespace char, or optionally a hashtag or mention symbol. 
+    Works now with flags=re.U (ie, Unicode) on any non-word char for most languages.
+    """
     if keep_mentions and keep_hashtags:
-        return re.sub(r"[^a-zA-Z0-9@#_ ]", "", text)
+        return re.sub(r"[^\w\s@#]", "", text, flags=re.U)
     elif keep_mentions:
-        return re.sub(r"[^a-zA-Z0-9@_ ]", "", text)
+        return re.sub(r"[^\w\s@]", "", text, flags=re.U)
     elif keep_hashtags:
-        return re.sub(r"[^a-zA-Z0-9#_ ]", "", text)
+        return re.sub(r"[^\w\s#]", "", text, flags=re.U)
     else:
-        return re.sub(r"[^a-zA-Z0-9_ ]", "", text)
+        return re.sub(r"[^\w\s]", "", text, flags=re.U)
 
-def basic_tokenize(text, lower=True, keep_hashtags=False, keep_mentions=False):
+def basic_tokenize(text, lower=True, keep_hashtags=True, keep_mentions=True):
     """
     Basic space-and-punctuation-based tokenization of a string. Removes all non-word
     characters (can keep hashtag and mention characters optionally), returns list of
@@ -281,6 +285,24 @@ def basic_tokenize(text, lower=True, keep_hashtags=False, keep_mentions=False):
         return remove_all_punctuation(text,
                                       keep_hashtags=keep_hashtags,
                                       keep_mentions=keep_mentions).split()
+
+def get_cleaned_tokens(text, lower=True, keep_hashtags=True, keep_mentions=True, rts=False, mts=False, https=False):
+    """
+    Tokenization function specially for cleaning tweet tokens. 
+    All parameters represent "keep" parameters:
+        lower, keep_hashtags, and keep_mentions are passed to 'basic_tokenize()'
+        rts: keep token 'rt' if true, else discard
+        mts: keep token 'mt' if true, else discard
+        https: keep any token containing 'http' if true, else discard
+    """
+    tokens = basic_tokenize(text, lower, keep_hashtags, keep_mentions)
+    if not rts:
+        tokens = [t for t in tokens if t != "rt"]
+    if not mts:
+        tokens = [t for t in tokens if t != "mt"]
+    if not https
+        tokens = [t for t in tokens if not re.search(r"http", t)]
+    return tokens
 
 def remove_RT_MT(text):
     """Removes all hanging instances of 'RT' and 'MT'. NOTE: Expects lower case"""
