@@ -62,7 +62,8 @@ We also use the [pip](http://www.pip-installer.org/en/latest/) package managemen
     
     keyword_tweets(oauth_file, keyword_list, limit_per_keyword)
     user_tweets(oauth_file, userid_list, limit_per_user)
-    place_tweets(oauth_file, geoloc_list, query, limit_per_location)
+    place_tweets(oauth_file, place_list, query, limit_per_location)
+    georadius_tweets(oauth_file, georadius_list, query, limit_per_location)
 
 These methods query twitter via the REST interface (single-transaction. NOT STREAMING)
 
@@ -72,35 +73,19 @@ Usage of place_tweets and georadius_tweets:
 
 ```python
 
-import smappPy.get_tweets as smapp
+from smappPy.get_tweets import place_tweets, georadius_tweets
 
-locations = smapp.place_tweets(api, query="Coffee", place_list=["Manchester"], limit=1)
+for tweet in place_tweets(api, place_list=["Manchester"], query="Coffee", limit=1):
+    print(tweet)
 
-locations_mult = smapp.place_tweets(api, query="Coffee", place_list=["Glasgow", "Dublin"], limit=1)
+for tweet in place_tweets(api, place_list=["Glasgow", "Dublin"], query="Coffee", limit=1):
+    print(tweet)
 
-locations_from_georadius_single = smapp.georadius_tweets(api, query="Coffee",  georadius_list=[[37.781157,-122.398720,"1mi"]], limit=1)#geo_radius list must be a nested list, even for a single list
+for tweet in georadius_tweets(api, georadius_list=[[37.781157,-122.398720,"1mi"]], query="Coffee", limit=1):
+    print(tweet)
 
-locations_from_georadius_multiple = smapp.georadius_tweets(api, query="Coffee", georadius_list=[[32.781830, -96.795860,"1mi"], [37.781157,-122.398720,"1mi"]], limit=1)
-
-for iterator in locations:
-    for item in iterator:
-        print("Single Geoloc England Item:")
-        print(item)
-
-for iterator in locations_mult:
-    for item in iterator:
-        print("Mult Geoloc Scot/Ireland Item:")
-        print(item)
-
-for iterator in locations_from_georadius_single:
-    for item in iterator:
-        print("Location from Radius Single:")
-        print(item)
-
-for iterator in locations_from_georadius_multiple:
-    for item in iterator:
-        print("Location from Radius Multiple:")
-        print(item)
+for tweet in georadius_tweets(api, georadius_list=[[32.781830, -96.795860,"1mi"], [37.781157,-122.398720,"1mi"]], query="Coffee", limit=1):
+    print(tweet)
 
 ```
 the "query" parameter is optional and can be omitted. If run with a query="Coffee", it will only pull

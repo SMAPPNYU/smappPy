@@ -61,17 +61,13 @@ def place_tweets(api, place_list=None, query="", granularity=None, limit=None):
     place in the original place_list.
     ["Kyiv", "San Francisco"] returns[Kyiv_Iterator_Obj, SanFrancisco_Iterator_Obj]
     """
-    locations_iterators = []
+
     if not (place_list):
         raise Exception("Hey hotshot slow down! You're missing a place_list input.")
 
-    for place in place_list:
-        placeid_search = api.geo_search(query=place, max_results=limit, granularity=granularity)
-        place_id = placeid_search[0].id # 0 gets the most likely place, not error proof
-        tweets_from_place = query_tweets(api, query=query+"&place:%s" % place_id, limit=limit)
-        locations_iterators.append(tweets_from_place)
-
-    return iter(locations_iterators)
+    locations_iterators = (query_tweets(api, query=query+"&place:%s" % api.geo_search(query=place, max_results=limit, granularity=granularity)[0].id, limit=limit) 
+                        for place in place_list)
+    return (tweet for it in locations_iterators for tweet in it)
 
 def georadius_tweets(api, georadius_list=None, query="", limit=None):
     """
@@ -82,18 +78,13 @@ def georadius_tweets(api, georadius_list=None, query="", limit=None):
     Returns a list whose elements are iterators over the results from each
     provided georadius.
     """
-    locations_iterators = []
+
     if not(georadius_list):
         raise Exception("Hey city slicker! You're missing a georadius_list input.")
     
-    for georadius in georadius_list:
-        for i in range(0, len(georadius)):
-            georadius[i] = str(georadius[i])
-
-        tweets_from_place = query_tweets(api, query=query+"&geocode:%s" % ",".join(georadius), limit=limit)
-        locations_iterators.append(tweets_from_place)
-
-    return iter(locations_iterators)
+    locations_iterators = (query_tweets(api, query=query+"&geocode:%s" % ",".join(str(elem) for elem in georadius), limit=limit) 
+                        for georadius in georadius_list)
+    return (tweet for it in locations_iterators for tweet in it)
 
 def tweets_from_file(tweetfile):
     """
