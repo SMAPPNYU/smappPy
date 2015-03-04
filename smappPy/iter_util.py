@@ -1,4 +1,12 @@
 from itertools import izip_longest, islice
+
+def get_ngrams(input_list, n):
+    """
+    Return all n-grams from list. Cred: 
+    http://locallyoptimal.com/blog/2013/01/20/elegant-n-gram-generation-in-python/
+    """
+    return zip(*[input_list[i:] for i in range(n)])
+
 def grouper(n, iterable, fillvalue=None, pad=True):
     """
     Split iterable into chunks of data:
