@@ -267,6 +267,21 @@ def remove_all_punctuation(text, keep_hashtags=False, keep_mentions=False):
     else:
         return re.sub(r"[^a-zA-Z0-9_ ]", "", text)
 
+def basic_tokenize(text, lower=True, keep_hashtags=False, keep_mentions=False):
+    """
+    Basic space-and-punctuation-based tokenization of a string. Removes all non-word
+    characters (can keep hashtag and mention characters optionally), returns list of
+    resulting space-separated tokens. Optionally lower-cases (default true)
+    """
+    if lower:
+        return remove_all_punctuation(text.lower(),
+                                      keep_hashtags=keep_hashtags,
+                                      keep_mentions=keep_mentions).split()
+    else:
+        return remove_all_punctuation(text,
+                                      keep_hashtags=keep_hashtags,
+                                      keep_mentions=keep_mentions).split()
+
 def remove_RT_MT(text):
     """Removes all hanging instances of 'RT' and 'MT'. NOTE: Expects lower case"""
     text = re.sub(r" rt ", " ", text)
