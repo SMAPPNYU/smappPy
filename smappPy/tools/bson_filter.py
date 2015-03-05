@@ -34,15 +34,15 @@ def filter_records(infile, year, month, day, tz):
         print e
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--input-file', required=True, help='BSON file to read from')
-    parser.add_argument('-o', '--output-file', required=True, help='BSON file to dump to')
-    parser.add_argument('-y', '--year', type=int, required=True, help='year')
-    parser.add_argument('-m', '--month', type=int, required=True, help='month')
-    parser.add_argument('-d', '--day', type=int, required=True, help='day')
-    parser.add_argument('-z', '--timezone', default='America/New_York', help="Effective time zone name [America/New_York]")
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('-f', '--input-file', required=True, help='BSON file to read from')
+    arg_parser.add_argument('-o', '--output-file', required=True, help='BSON file to dump to')
+    arg_parser.add_argument('-y', '--year', type=int, required=True, help='year')
+    arg_parser.add_argument('-m', '--month', type=int, required=True, help='month')
+    arg_parser.add_argument('-d', '--day', type=int, required=True, help='day')
+    arg_parser.add_argument('-z', '--timezone', default='America/New_York', help="Effective time zone name [America/New_York]")
 
-    args = parser.parse_args()
+    args = arg_parser.parse_args()
 
     print("Filtering for tweets sent on {year}/{month}/{day} in {tz}".format(
         year=args.year,
