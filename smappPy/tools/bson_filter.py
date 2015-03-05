@@ -27,7 +27,7 @@ def filter_records(infile, year, month, day, tz):
     it = decode_file_iter(infile)
     try:
         for rec in it:
-            d = rec['timestamp'].astimezone(tz)
+            d = tweet_date(rec).astimezone(tz)
             if d.year == year and d.month == month and d.day == day:
                 yield rec
     except Exception as e:
@@ -43,6 +43,12 @@ if __name__ == '__main__':
     parser.add_argument('-z', '--timezone', default='America/New_York', help="Effective time zone name [America/New_York]")
 
     args = parser.parse_args()
+
+    print("Filtering for tweets send on {year}/{month}/{day} in {tz}".format(
+        year=args.year,
+        month=args.month,
+        day=args.day,
+        tz=args.timezone))
 
     with open(args.input_file, 'rb') as infile:
         with open(args.output_file, 'wb') as outfile:
