@@ -300,7 +300,7 @@ def get_cleaned_tokens(text, lower=True, keep_hashtags=True, keep_mentions=True,
         tokens = [t for t in tokens if t != "rt"]
     if not mts:
         tokens = [t for t in tokens if t != "mt"]
-    if not https
+    if not https:
         tokens = [t for t in tokens if not re.search(r"http", t)]
     return tokens
 
