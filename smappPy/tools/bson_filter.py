@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    print("Filtering for tweets send on {year}/{month}/{day} in {tz}".format(
+    print("Filtering for tweets sent on {year}/{month}/{day} in {tz}".format(
         year=args.year,
         month=args.month,
         day=args.day,
