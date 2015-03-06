@@ -6,9 +6,30 @@ Utility to filter a bson file of tweets and output a bson file with only tweets 
 
 import pytz
 import argparse
-from dateutil import parser
 from datetime import datetime
 from bson import BSON, decode_file_iter
+
+MONTHS={
+    'Jan': 1,
+    'Feb': 2,
+    'Mar': 3,
+    'Apr': 4,
+    'May': 5,
+    'Jun': 6,
+    'Jul': 7,
+    'Aug': 8,
+    'Sep': 9,
+    'Oct': 10,
+    'Nov': 11,
+    'Dec': 12,
+}
+
+def parsedate(s):
+    t = s.split()
+    tt = t[3].split(":")
+    if t[4] != "+0000":
+        raise "Only works for utc"
+    return datetime(int(t[-1]), MONTHS[t[1]], int(t[2]), int(tt[0]), int(tt[1]), int(tt[2])).replace(tzinfo=pytz.utc)
 
 def tweet_date(tweet):
     """
@@ -17,7 +38,7 @@ def tweet_date(tweet):
     """
     if 'timestamp' in tweet:
         return tweet['timestamp']
-    return parser.parse(tweet['created_at'])
+    return parsedate(tweet['created_at'])
 
 def filter_records(infile, year, month, day, tz):
     """
