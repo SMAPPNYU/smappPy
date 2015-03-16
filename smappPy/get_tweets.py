@@ -5,14 +5,20 @@ Functions for getting tweets from Twitter (via REST API), file, and database
 @date 2/17/2015
 """
 
+import logging
 from bson.json_util import loads
 from tweepy import Cursor, TweepError
 from json_util import ConcatJSONDecoder
 
 def _check_limit(limit):
-    """Checks common 'limit' param to see if is int. Exception if not"""
-    if type(limit) != int:
-        raise Exception("Limit ({0}) must be an integer".format(limit))
+    """Checks a 'limit' param. If not an int, warns and returns 0 (no limit)"""
+    try:
+        limit = int(limit)
+    except ValueError:
+        logging.warn("Given limit {0} not a valid int. Returning full results".format(
+            limit))
+        return 0
+    return limit
 
 def query_tweets(api, query, limit=None, languages=None):
     """
@@ -24,8 +30,7 @@ def query_tweets(api, query, limit=None, languages=None):
     """
     cursor = Cursor(api.search, q=query, include_entities=True, lang=languages)
     if limit:
-        _check_limit(limit)
-        return cursor.items(limit)
+        return cursor.items(_check_limit(limit))
     return cursor.items()
 
 def user_tweets(api, user_id=None, screen_name=None, limit=None):
@@ -43,8 +48,7 @@ def user_tweets(api, user_id=None, screen_name=None, limit=None):
     elif screen_name:
         cursor = Cursor(api.user_timeline, screen_name=screen_name)
     if limit:
-        _check_limit(limit)
-        return cursor.items(limit)
+        return cursor.items(_check_limit(limit))
     return cursor.items()
 
 def place_tweets(api, place_list=None, query="", granularity=None, limit=None):
