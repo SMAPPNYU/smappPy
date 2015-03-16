@@ -90,7 +90,13 @@ def georadius_tweets(api, georadius_list=None, query="", limit=None):
                         for georadius in georadius_list)
     return (tweet for it in locations_iterators for tweet in it)
 
-def tweets_from_file(tweetfile):
+def tweets_from_BSON_file_IT(tweetfile):
+    """
+    Returns an iterator over tweets from the given raw Mongo BSON file.
+    """
+    raise NotImplementedError()
+
+def tweets_from_JSON_file(tweetfile):
     """
     Returns a list of tweets read from given file. Tweets are dicts representing json of 
     file contents. For a less-memory intensive version, consider the tweet_from_file_IT() 
@@ -102,7 +108,7 @@ def tweets_from_file(tweetfile):
         tweets = loads(handle.read(), cls=ConcatJSONDecoder)
     return tweets
 
-def tweets_from_file_IT(tweetfile):
+def tweets_from_JSON_file_IT(tweetfile):
     """
     Returns an iterator for tweets in given tweetfile. Tweets are considered dict
     representations of JSON in given tweetfile
