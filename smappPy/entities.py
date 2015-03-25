@@ -171,6 +171,13 @@ def num_urls(tweet):
         return len(tweet["entities"]["urls"])
     return 0
 
+def get_urls(tweet):
+    """Returns a list of the URLs in tweet (will return multiples if multiples exist in tweet)"""
+    if contains_url(tweet):
+        return [u["expanded_url"] for u in tweet["entities"]["urls"]]
+    else:
+        return []
+
 def contains_link(tweet):
     """Returns true if tweet contains link (URL or Media). Checks entities"""
     if "entities" not in tweet:
@@ -193,6 +200,14 @@ def num_links(tweet):
         return len(tweet["entities"]["media"])
     return len(tweet["entities"]["urls"]) + len(tweet["entities"]["media"])
 
+def get_links(tweet):
+    """Return all link addresses in the tweet"""
+    links = []
+    if contains_url(tweet):
+        links += [u["expanded_url"] for u in tweet["entities"]["urls"]]
+    if contains_media(tweet):
+        links += [m["expanded_url"] for m in tweet["entities"]["media"]]
+    return links
 
 # MEDIA (and image) functions
 def contains_media(tweet):
