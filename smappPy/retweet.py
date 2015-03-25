@@ -72,7 +72,6 @@ def get_user_retweeted(tweet, warn=True):
             return
         return (None, components[1])
 
-
 def split_manual_retweet(tweet):
     """
     Takes a tweet (checks if it is a manual retweet), and returns a triple: 
