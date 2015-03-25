@@ -286,7 +286,8 @@ def basic_tokenize(text, lower=True, keep_hashtags=True, keep_mentions=True):
                                       keep_hashtags=keep_hashtags,
                                       keep_mentions=keep_mentions).split()
 
-def get_cleaned_tokens(text, lower=True, keep_hashtags=True, keep_mentions=True, rts=False, mts=False, https=False):
+def get_cleaned_tokens(text, lower=True, keep_hashtags=True, keep_mentions=True, rts=False,
+    mts=False, https=False, stopwords=[]):
     """
     Tokenization function specially for cleaning tweet tokens. 
     All parameters represent "keep" parameters:
@@ -302,6 +303,8 @@ def get_cleaned_tokens(text, lower=True, keep_hashtags=True, keep_mentions=True,
         tokens = [t for t in tokens if t != "mt"]
     if not https:
         tokens = [t for t in tokens if not re.search(r"http", t)]
+    if stopwords:
+        tokens = [t for t in tokens if t not in stopwords]
     return tokens
 
 def remove_RT_MT(text):
