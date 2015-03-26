@@ -1,4 +1,19 @@
 from itertools import izip_longest, islice
+from smappPy.unicode_csv import UnicodeWriter
+
+def it_to_csv(it_of_its, outfile, mode="w"):
+    """
+    Export an iterable of iterables to a CSV. Row x Column.
+    (eg: [["id", "score"], [1, 0.9], [2, 0.73], ...] will give
+        id,score
+        1,0.9
+        2,0.73
+    Can set 'mode' for appending ("a"). Default: write ("w")
+    """
+    with open(outfile, mode) as handle:
+        writer = UnicodeWriter(handle)
+        for row in it_of_its:
+            writer.writerow(list(row))
 
 def get_ngrams(input_list, n):
     """
