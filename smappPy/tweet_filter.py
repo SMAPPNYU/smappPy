@@ -83,7 +83,7 @@ def within_geobox(tweet, sw_lon, sw_lat, ne_lon, ne_lat):
     within_geobox(tweet, -75.280303,39.8670041,-74.9557629,40.1379919)
     # true for tweets tweeted within a box surrounding Philadelphia
     """
-    if 'coordinates' not in tweet or 'coordinates' not in tweet['coordinates']:
+    if 'coordinates' not in tweet or tweet['coordinates'] is None or 'coordinates' not in tweet['coordinates']:
         return False
     coords = tweet['coordinates']['coordinates']
     return coords[0] > float(sw_lon) and coords[0] < float(ne_lon) and coords[1] > float(sw_lat) and coords[1] < float(ne_lat)
