@@ -2,9 +2,57 @@
 Twitter error handling functions
 """
 
+import json
+import logging
 from ssl import SSLError
 from httplib import IncompleteRead
 from tweepy.error import TweepError
+
+logger = logging.getLogger(__name__)
+
+# Examples of crazy shit I'm seeing:
+# user_timeline endpoint:
+#{'errors': [{'message': 'Rate limit exceeded', 'code': 88}]}
+# 
+# friends_ids and followers_ids endpoints    
+#[{'message': 'Rate limit exceeded', 'code': 88}]
+
+def parse_tweepy_error(error):
+    """
+    Takes instance of tweepy.error.TweepError. Tries to figure out what the hell
+    is going on with it, due to Twitter's bizarre and inconsistent error 
+    formatting.
+    Returns (Gauranteed! Right? Because we're not asses!) a dict in the form:
+    {
+        "code": <int>ErrorCode}, 
+        "message": <str>"Some descriptive message"
+    }
+    """
+    code, message = 1, str(error)
+
+    try:
+        e = json.loads(error.message)
+    except:
+        e = error.message
+
+    if isinstance(e, dict):
+        if "errors" in e:
+            if len(e["errors"]) > 0:
+                try:
+                    code = e["errors"][0]["code"]
+                    message = e["errors"][0]["message"]
+                except:
+                    pass
+    elif isinstance(e, list):
+        if len(e) > 0:
+            try:
+                code = e[0]["code"]
+                message = e[0]["message"]
+            except:
+                pass
+
+    return {"code": code, "message": message}
+
 
 def call_with_error_handling(function, *args, **kwargs):
     """
@@ -12,40 +60,28 @@ def call_with_error_handling(function, *args, **kwargs):
     try-except block catching most twitter errors and responses.
     Returns tuple: (function return value, return code). Return code is 0
     when function executes successfully. Custom Error Codes:
-        1   - Unknown Twitter error
+        1   - Unknown/Unparseable Twitter error
         2   - HTTPLib incomplete read error
         3   - SSL Read timeout error
         4   - ValeError (eg: "No JSON object could be decoded")
     """
-    #TODO: Extend to consider as many twitter error codes as you have patience for
-    #TODO: (https://dev.twitter.com/docs/error-codes-responses)
     try:
        ret = function(*args, **kwargs)
     except TweepError as e:
-        if type(e.message) == list and len(e.message) > 0:
-            if e.message[0]["code"] == 34:
-                print ".. No user found with ID"
-            elif e.message[0]["code"] == 63:
-                print ".. User's account has been suspended"
-            elif e.message[0]["code"] == 88:
-                print ".. Rate limit exceeded"
-            elif e.message[0]["code"] == 130:
-                print ".. Twitter over capactity (130)"
-            elif e.message[0]["code"] == 131:
-                print ".. Unknown internal twitter error (131)"
-            return (None, e.message[0]["code"])
-        elif type(e.message) in [str, unicode]:
-            print ".. Error: {0}".format(e)
-            return (None, 1)
-        raise(e)
+        error_dict = parse_tweepy_error(e)
+        logger.warning("Error {0}: {1}".format(error_dict["code"], error_dict["message"]))
+        return (None, error_dict["code"])
     except IncompleteRead as i:
-        print ".. HTTPLib incomplete read error: {0}".format(i)
+        logger.warn("HTTPLib incomplete read error: {0}".format(i))
         return (None, 2)
     except SSLError as s:
-        print ".. SSL read timeout error: {0}".format(s)
+        logger.warn("SSL read timeout error: {0}".format(s))
         return (None, 3)
     except ValueError as v:
-        print ".. Value error (most likely JSON problem): {0}".format(v)
+        logger.warn("Value error (most likely JSON problem): {0}".format(v))
         return (None, 4)
 
     return (ret, 0)
+
+
+

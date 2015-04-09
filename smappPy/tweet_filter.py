@@ -7,9 +7,10 @@ Functions and docstrings parsed directly by the web dashboard for adding these t
 2014/11/19 @jonathanronen
 """
 
-def field_contains(tweet, field, *terms):
+def field_contains(tweet, field, *terms, **kwargs):
     """
     Returns true if the text in tweet[field] contains any of the terms given.
+    By default, this function is NOT case-sensitive.
 
     `field` may be any attribute of tweets, for instance:
         field_contains(tweet, 'text', 'nyc')
@@ -28,8 +29,36 @@ def field_contains(tweet, field, *terms):
     value = tweet
     for p in path:
         value = value[p]
-    value = value.lower()
-    return any(term.lower() in value for term in terms)
+    if kwargs.get("case_sensitive", False):
+        return any(term in value for term in terms)
+    else:
+        value = value.lower()
+        return any(term.lower() in value for term in terms)
+
+def field_contains_case_sensitive(tweet, field, *terms):
+    """
+    Returns true if the text in tweet[field] contains any of the terms given.
+    Terms are case-sensitive.
+
+    `field` may be any attribute of tweets, for instance:
+        field_contains(tweet, 'text', 'NYC')
+        # will return True for tweets containing NYC 
+        # will return false if tweet contains only lowercase nyc
+
+    `field` may also be a path to a nested attribute, for instance:
+        field_contains(tweet, 'user.screen_name', 'Bob', 'ALICE')
+        # will return True for usernames with Bob or ALICE in them.
+
+    Example:
+    ========
+    field_contains_case_sensitive(tweet, 'text', ICE', 'IRA')
+    # true if tweet contains ICE or IRA (but false for lowercase ice, ira)
+    """
+    if field_contains(tweet, field, *terms, case_sensitive=True):
+        return True
+    elif field_contains(tweet, field, *terms, case_sensitive=False):
+        return False
+    return True
 
 def user_location_contains(tweet, *terms):
     """

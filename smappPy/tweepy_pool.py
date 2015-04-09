@@ -8,8 +8,10 @@ import json
 import time
 from datetime import datetime
 from tweepy import TweepError
+from smappPy.tweepy_error_handling import parse_tweepy_error
 
 RATE_LIMIT_ERROR = 88
+OVER_CAP_ERROR = 130
 
 class APIPool(object):
     """
@@ -61,17 +63,17 @@ class APIPool(object):
         try:
             return api_struct[0].__getattribute__(method_name)(*args, **kwargs)
         except TweepError as e:
-            if type(e.message) == list and e.message[0]['code'] == RATE_LIMIT_ERROR:
+            error_dict = parse_tweepy_error(e)
+            if error_dict["code"] == RATE_LIMIT_ERROR:
                 api_struct[1][method_name] = now
+                logging.debug("Received rate limit: {0}".format(error_dict["message"]))
                 return self._call_with_throttling_per_method(method_name, *args, **kwargs)
-            elif type(e.message) == unicode:
-                message = json.loads(e.message)
-                if 'errors' in message and message['errors'][0]['code'] == RATE_LIMIT_ERROR:
-                    api_struct[1][method_name] = now
-                    return self._call_with_throttling_per_method(method_name, *args, **kwargs)
-                print e.message
+            elif error_dict["code"] == OVER_CAP_ERROR:
+                api_struct[1][method_name] = now
+                logging.debug("Received over cap.: {0}".format(error_dict["message"]))
+                return self._call_with_throttling_per_method(method_name, *args, **kwargs)
             else:
-                raise e
+                raise(e)
 
     def __getattribute__(self, name):
         def api_method(*args, **kwargs):

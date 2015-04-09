@@ -16,11 +16,11 @@ parser.add_argument("-w", "--password", required=True)
 args = parser.parse_args()
 
 ## CONFIG #####################################################################
-start = datetime(2014, 6, 1)
-end = datetime(2014, 6, 8)
+start = datetime(2014, 8, 1)
+end = datetime(2014, 12, 1)
 
-client = MongoClient("smapp-data.bio.nyu.edu", 27011)
-database = client["RandomUsers"]
+client = MongoClient("smapp-politics", 27011)
+database = client["ImpeachObama"]
 collection = database["tweets"]
 
 plot_super_title = "Random User Collection - User Tweet Distribution"
