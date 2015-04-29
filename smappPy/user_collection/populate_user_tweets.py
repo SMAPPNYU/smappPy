@@ -47,11 +47,11 @@ def populate_user_tweets(api, user_collection, tweet_collection, tweets_per_user
                                         {"tweets_updated": {"$lt": update_threshold}},
                                         {"tweets_updated": {"$type": BSON_NULL}}
                                      ]},
-                                     timeout=False,)
+                                     no_cursor_timeout=True,)
                                      # Remove sort for now. Can not execute on field without index
                                      # sort=[("tweets_updated", ASCENDING)])
     else:
-        users = user_collection.find(timeout=False,)
+        users = user_collection.find(no_cursor_timeout=True,)
                                      # Remove sort (see above)
                                      # sort=[("tweets_updated", ASCENDING)])
     logger.info("Considering {0} users total".format(users.count(with_limit_and_skip=True)))

@@ -261,9 +261,9 @@ def _get_user_sample(user_collection, user_sample, update_field, update_threshol
                                         {update_field: {"$type": BSON_NULL}}
                                      ]},
                                      limit=int(user_count * user_sample),
-                                     timeout=False)
+                                     no_cursor_timeout=True)
     else:
-        users = user_collection.find(limit=int(user_count * user_sample), timeout=False)
+        users = user_collection.find(limit=int(user_count * user_sample), no_cursor_timeout=True)
 
     return users
 
