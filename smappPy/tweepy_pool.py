@@ -26,9 +26,13 @@ class APIPool(object):
     Twitter API Pool.
     This class wraps a pool of `tweepy.api.API` objects, and delegates function calls to them,
     cycling through them when a twitter api rate limit is reached.
+
+    If 'use_appauth' is True, stores additional application-only auth objects in self._apis list
+    (such that there is one oauth and one appauth API for each given token).
+    (https://dev.twitter.com/oauth/application-only)
     """
 
-    def __init__(self, oauths=None, oauths_filename=None, time_to_wait=15*60, debug=False):
+    def __init__(self, oauths=None, oauths_filename=None, time_to_wait=15*60, use_appauth=True, debug=False):
         """
         Instantiate APIPool using either a list of oauths (which are dicts with keys secrets and tokens)
         or using a file which contains these in JSON format.
@@ -43,12 +47,19 @@ class APIPool(object):
         oauth_handlers = [self._get_tweepy_oauth_handler(oauth_dict) for oauth_dict in oauths]
         self._apis =[[tweepy.API(oauth_handler), dict()] for oauth_handler in oauth_handlers]
 
+        if use_appauth:
+            appauth_handlers = [self._get_tweepy_appauth_handler(oauth_dict) for oauth_dict in oauths]
+            self._apis += [[tweepy.API(appauth_handler), dict()] for appauth_handler in appauth_handlers]
+
         self.parser = self._apis[0][0].parser
 
     def _get_tweepy_oauth_handler(self, oauth_dict):
         auth = tweepy.OAuthHandler(oauth_dict["consumer_key"], oauth_dict["consumer_secret"])
         auth.set_access_token(oauth_dict["access_token"], oauth_dict["access_token_secret"])
         return auth
+
+    def _get_tweepy_appauth_handler(self, oauth_dict):
+        return tweepy.AppAuthHandler(oauth_dict["consumer_key"], oauth_dict["consumer_secret"])
 
     def _pick_api_with_shortest_waiting_time_for_method(self, method_name):
         ret_api_struct = self._apis[0]
