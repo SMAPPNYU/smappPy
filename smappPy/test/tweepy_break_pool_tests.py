@@ -8,7 +8,6 @@ from tweepy_pool import APIBreakPool, RateLimitException
 
 oauths_file = "/Users/dpb/Dropbox/DuncanPB/twitter/smapp_test_single.json"
 api = APIBreakPool(oauths_filename=oauths_file)
-method_name = "followers"
 
 def raise_rate_limit():
 	"""When called, raises a Tweepy TweepError (rate limit)"""
@@ -18,6 +17,9 @@ def raise_other_error():
 	"""When called, raises an anonymous TweepError"""
 	raise tweepy.TweepError([{'message': 'Anonymous tweep error', 'code': 12345}])
 
+
+# SETUP
+method_name = "user_timeline"
 entities_requested = 600
 total_recvd = 0
 num_calls = 0
