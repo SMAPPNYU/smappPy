@@ -50,6 +50,8 @@ symbols:
     indices: [<start_incl>, <stop_excl>]    // Indices include '$' symbol
 """
 
+import re
+
 # General functions
 def contains_entities(tweet):
     """
@@ -154,6 +156,11 @@ def get_hashtags(tweet):
     if contains_hashtag(tweet):
         return [h["text"] for h in tweet["entities"]["hashtags"]]
     return []
+
+ht_pattern = r"#\w+"
+def get_hashtags_from_text(text):
+    """A simple RE-based best-effort capturer of hashtags in given text"""
+    return re.findall(ht_pattern, text, flags=re.UNICODE)
 
 
 # URL and Link functions
