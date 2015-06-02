@@ -87,9 +87,9 @@ def split_manual_retweet(tweet):
         print "Warning: given tweet is not a manual retweet (as far as we can tell)"
         return
 
-    rt_pattern = r"(?P<prefix>.*?)\s?RT @(?P<user>.*?)$|[:\s]+(?P<postfix>.*)"
-    rt_re = re.compile(rt_pattern, re.DOTALL)
-    match = rt_re.match(tweet['text'].encode("utf-8"))
+    rt_pattern = r"(?P<prefix>.*?)\s?RT @(?P<user>.*?)[:\s]+(?P<postfix>.*)"
+    rt_re = re.compile(rt_pattern, re.U|re.DOTALL)
+    match = rt_re.match(tweet['text'])
 
     if match == None:
         raise Exception("Could not match Manual Retweet structure (text: {0})".format(
