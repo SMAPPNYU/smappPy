@@ -13,6 +13,8 @@ class LimitedSizeDict(OrderedDict):
         OrderedDict.__setitem__(self, key, value)
         self._check_size_limit()
 
+    # May also need to implement other methods, like "update"?
+
     def _check_size_limit(self):
         if self.size_limit is not None:
           while len(self) > self.size_limit:
