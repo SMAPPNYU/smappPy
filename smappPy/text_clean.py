@@ -389,3 +389,10 @@ def remove_digit_words(text):
     Remove all space-separated substrings of only digits. Return cleaned string.
     """
     return " ".join([w for w in text.split() if not w.isdigit()])
+
+def remove_user_mentions(text):
+    """
+    Removes @mentions from tweets so that "hello @shlomo how are you?" becomes "hello how are you?."
+    """
+    text = re.sub(r"\S*@\w+\S*", "", text)
+    return text
