@@ -5,8 +5,8 @@ Contains smappPy functionality for storing tweets to file, database, etc
 @date 2/24/2014
 """
 
-import simplejson.dumps as json_dumps
-import bson.json_util.dumps as bson_dumps
+from simplejson import dumps as json_dumps
+from bson.json_util import dumps as bson_dumps
 
 def tweets_to_file(tweets, tweetfile, append=False, pure_json=False, pretty=False):
     """
