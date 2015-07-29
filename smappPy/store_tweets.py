@@ -5,8 +5,8 @@ Contains smappPy functionality for storing tweets to file, database, etc
 @date 2/24/2014
 """
 
-import simplejson.dumps as json.dumps
-import bson.json_util.dumps as bson.dumps
+import simplejson.dumps as json_dumps
+import bson.json_util.dumps as bson_dumps
 
 def tweets_to_file(tweets, tweetfile, append=False, pure_json=False, pretty=False):
     """
@@ -31,7 +31,7 @@ def tweets_to_bson(tweets, tweetfile, append=False):
     else:
         handle = open(tweetfile, "wb")
     for tweet in tweets:
-        handle.write(bson.dumps(tweet))
+        handle.write(bson_dumps(tweet))
     handle.close()
 
 def tweets_to_json(tweets, tweetfile, append=False, pretty=False):
@@ -47,10 +47,10 @@ def tweets_to_json(tweets, tweetfile, append=False, pretty=False):
         handle = open(tweetfile, "w")
     if pretty:
         for tweet in tweets:
-            handle.write(json.dumps(tweet, indent=4, separators=(',', ': ')) + "\n")
+            handle.write(json_dumps(tweet, indent=4, separators=(',', ': ')) + "\n")
     else:
         for tweet in tweets:
-            handle.write(json.dumps(tweet) + "\n")
+            handle.write(json_dumps(tweet) + "\n")
     handle.close()
 
 def tweets_to_db(server, port, user, password, database, collection, tweets):
