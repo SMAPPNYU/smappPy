@@ -53,6 +53,17 @@ class APIPool(object):
 
         self.parser = self._apis[0][0].parser
 
+    def __getattribute__(self, name):
+        def api_method(*args, **kwargs):
+            return self._call_with_throttling_per_method(name, *args, **kwargs)
+
+        if name in tweepy.API.__dict__:
+            api_method.pagination_mode = self._pagination_mode_for(name)
+            api_method.__self__ = self
+            return api_method
+        else:
+            return object.__getattribute__(self, name)
+
     def _get_tweepy_oauth_handler(self, oauth_dict):
         auth = tweepy.OAuthHandler(oauth_dict["consumer_key"], oauth_dict["consumer_secret"])
         auth.set_access_token(oauth_dict["access_token"], oauth_dict["access_token_secret"])
@@ -93,17 +104,6 @@ class APIPool(object):
                 return self._call_with_throttling_per_method(method_name, *args, **kwargs)
             else:
                 raise(e)
-
-    def __getattribute__(self, name):
-        def api_method(*args, **kwargs):
-            return self._call_with_throttling_per_method(name, *args, **kwargs)
-
-        if name in tweepy.API.__dict__:
-            api_method.pagination_mode = self._pagination_mode_for(name)
-            api_method.__self__ = self
-            return api_method
-        else:
-            return object.__getattribute__(self, name)
 
     def _api_call_supports_pagination(self, name):
         return 'pagination_mode' in self._apis[0][0].__getattribute__(name).__dict__
