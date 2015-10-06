@@ -44,9 +44,9 @@ def user_tweets(api, user_id=None, screen_name=None, limit=None):
     if not (user_id or screen_name):
         raise Exception("Must provide one of user_id or screen_name")
     if user_id:
-        cursor = Cursor(api.user_timeline, user_id=user_id)
+        cursor = Cursor(api.user_timeline, user_id=user_id, count=200)
     elif screen_name:
-        cursor = Cursor(api.user_timeline, screen_name=screen_name)
+        cursor = Cursor(api.user_timeline, screen_name=screen_name, count=200)
     if limit:
         return cursor.items(_check_limit(limit))
     return cursor.items()
