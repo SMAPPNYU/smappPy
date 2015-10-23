@@ -263,9 +263,22 @@ OAuth Files should be of the format:
 ]
 ```
 where there can be any number of JSON objects inside the array. 
-The file above could be called "oauth-file.json" for extra clarity. 
+The file above could be called "oauth-file.json" for extra clarity.
 
-## 12 Facebook data
+## 12 hadestunnel.py and hadestunnel.sh
+
+These two scripts represent our tunneler that creates a tunnel into HPC.
+To make the tunnel work you need to put a file in your home directory
+that contains your HPC password and username in the ~/.ssh directory like so:
+
+~/.ssh/hpclogin.txt (~ is your home directory /User/YOUR_NAME)
+
+that looks like so (username on line one, password on line two):
+
+username
+password
+
+## 13 Facebook data
 
 IN PROGRESS. Basic scripts exist to scrape data from facebook pages.
 
