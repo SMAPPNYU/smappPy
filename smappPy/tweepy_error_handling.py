@@ -51,6 +51,13 @@ def parse_tweepy_error(error):
             except:
                 pass
 
+    elif error.response is not None:
+        try:
+            code = error.response.status_code
+            message = error.message
+        except:
+            pass
+
     return {"code": code, "message": message}
 
 
