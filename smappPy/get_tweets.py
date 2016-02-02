@@ -20,7 +20,7 @@ def _check_limit(limit):
         return 0
     return limit
 
-def query_tweets(api, query, limit=None, languages=None):
+def query_tweets(api, query, limit=None, languages=None, **kwargs):
     """
     Queries twitter REST API for tweets matching given twitter search 'query'.
     Takes an authenticated api object (API or APIPool), a query string, an optional
@@ -28,25 +28,31 @@ def query_tweets(api, query, limit=None, languages=None):
     further filter results.
     Returns a cursor (iterator) over Tweepy status objects (not native JSON docs)
     """
-    cursor = Cursor(api.search, q=query, include_entities=True, lang=languages)
+    cursor = Cursor(api.search, q=query, include_entities=True, lang=languages,
+        **kwargs)
     if limit:
         return cursor.items(_check_limit(limit))
     return cursor.items()
 
-def user_tweets(api, user_id=None, screen_name=None, limit=None):
+def user_tweets(api, user_id=None, screen_name=None, limit=None, **kwargs):
     """
     Queries Twitter REST API for user's tweets. Returns as many as possible, or
     up to given limit.
     Takes an authenticated API object (API or APIPool), one of user_id or screen_name 
     (not both), and an optional limit for number of tweets returned.
-    Returns a cursor (iterator) over Tweepy status objects
+    Returns a cursor (iterator) over Tweepy status objects.
+
+    Also takes variable collection of keyword argument to pass on to
+    Tweepy/APIPool query methods, to support full API call parameterization.
     """
     if not (user_id or screen_name):
         raise Exception("Must provide one of user_id or screen_name")
     if user_id:
-        cursor = Cursor(api.user_timeline, user_id=user_id, count=200)
+        cursor = Cursor(api.user_timeline, user_id=user_id, count=200,
+            **kwargs)
     elif screen_name:
-        cursor = Cursor(api.user_timeline, screen_name=screen_name, count=200)
+        cursor = Cursor(api.user_timeline, screen_name=screen_name,
+            count=200, **kwargs)
     if limit:
         return cursor.items(_check_limit(limit))
     return cursor.items()
