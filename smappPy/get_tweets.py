@@ -10,12 +10,14 @@ from bson.json_util import loads
 from tweepy import Cursor, TweepError
 from json_util import ConcatJSONDecoder
 
+logger = logging.getLogger(__name__)
+
 def _check_limit(limit):
     """Checks a 'limit' param. If not an int, warns and returns 0 (no limit)"""
     try:
         limit = int(limit)
     except ValueError:
-        logging.warn("Given limit {0} not a valid int. Returning full results".format(
+        logger.warn("Given limit {0} not a valid int. Returning full results".format(
             limit))
         return 0
     return limit
