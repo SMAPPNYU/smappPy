@@ -78,7 +78,11 @@ class APIPool(object):
         return auth
 
     def _get_tweepy_appauth_handler(self, oauth_dict):
-        return tweepy.AppAuthHandler(oauth_dict["consumer_key"], oauth_dict["consumer_secret"])
+        try:
+            auth = tweepy.AppAuthHandler(oauth_dict["consumer_key"], oauth_dict["consumer_secret"])
+        except TweepError:
+            print TweepError
+        return auth
 
     def _pick_api_with_shortest_waiting_time_for_method(self, method_name):
         ret_api_struct = self._apis[0]
