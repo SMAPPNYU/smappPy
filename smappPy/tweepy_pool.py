@@ -70,7 +70,10 @@ class APIPool(object):
             return object.__getattribute__(self, name)
 
     def _get_tweepy_oauth_handler(self, oauth_dict):
-        auth = tweepy.OAuthHandler(oauth_dict["consumer_key"], oauth_dict["consumer_secret"])
+        try:
+            auth = tweepy.OAuthHandler(oauth_dict["consumer_key"], oauth_dict["consumer_secret"])
+        except TweepError:
+            print TweepError
         auth.set_access_token(oauth_dict["access_token"], oauth_dict["access_token_secret"])
         return auth
 
