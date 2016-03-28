@@ -7,7 +7,7 @@
                     |_|   |_|
 ```
 
-:wrench: smapptools addresses common tasks programmers dealing with lots of data
+:hammer: smapptools addresses common tasks programmers dealing with lots of data
 
 This includes:
     
