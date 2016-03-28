@@ -6,9 +6,8 @@
 |___/_| |_| |_|\__,_| .__/| .__/ \__\___/ \___/|_|___/
                     |_|   |_|
 ```
-*Python package and tools for Twitter data analysis. Contact: SMaPP Lab, NYU.*
 
-smappPy is a Python "package" (a module of modules - basically, a structured collection of code) that addresses common tasks for programming with Tweets and analyzing Twitter data.
+:wrench: smapptools is a Python "package" that addresses common tasks programmers dealing with lots of data have to deal with
 
 This includes:
     
