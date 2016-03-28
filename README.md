@@ -7,7 +7,7 @@
                     |_|   |_|
 ```
 
-:wrench: smapptools is a Python "package" that addresses common tasks programmers dealing with lots of data have to deal with
+:wrench: smapptools addresses common tasks programmers dealing with lots of data
 
 This includes:
     
