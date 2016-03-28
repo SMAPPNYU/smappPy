@@ -1,5 +1,11 @@
-# smappPy
-
+```
+                                 _              _
+ ___ _ __ ___   __ _ _ __  _ __ | |_ ___   ___ | |___ 
+/ __| '_ ` _ \ / _` | '_ \| '_ \| __/ _ \ / _ \| / __|
+\__ \ | | | | | (_| | |_) | |_) | || (_) | (_) | \__ \
+|___/_| |_| |_|\__,_| .__/| .__/ \__\___/ \___/|_|___/
+                    |_|   |_|
+```
 *Python package and tools for Twitter data analysis. Contact: SMaPP Lab, NYU.*
 
 smappPy is a Python "package" (a module of modules - basically, a structured collection of code) that addresses common tasks for programming with Tweets and analyzing Twitter data.
