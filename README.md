@@ -9,6 +9,9 @@
 
 :hammer: smapptools addresses common tasks programmers dealing with lots of data
 
+
+what should be left in smapptools when we're done w/ it are general tools. (twitter specific tools, facebook specific tools go somewhere else, probably new smappy)
+
 This includes:
     
 1. interfacing with Twitter to find tweets and user data (based on user, keyword, and/or location)
