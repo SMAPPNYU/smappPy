@@ -10,7 +10,7 @@
 :hammer: smapptools addresses common tasks programmers dealing with lots of data
 
 
-what should be left in smapptools when we're done w/ it are general tools. (twitter specific tools, facebook specific tools go somewhere else, probably new smappy)
+what should be left in smapptools when we're done w/ it are general tools. (twitter specific tools, facebook specific tools go somewhere else, probably new smappy). scripts like a script that builds a network will go into smapputil.
 
 This includes:
     
