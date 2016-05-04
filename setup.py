@@ -1,8 +1,8 @@
 from setuptools import setup
 
-setup(name='smappPy',
+setup(name='smapptools',
       version='0.1.31',
-      description='NYU SMaPP lab utility library',
+      description='smapp lab utility library',
       author='NYU SMaPP',
       license='GPLv2',
       author_email='smapp_programmer-group@nyu.edu',
