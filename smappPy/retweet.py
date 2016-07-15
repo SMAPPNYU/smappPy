@@ -13,7 +13,7 @@ rt_partial_pattern = r" RT @"
 def is_retweet(tweet):
     """Takes a python-native tweet obect (a dict). Returns True if a tweet is any kind of retweet"""
     import re
-    if 'retweeted_status' in tweet:
+    if 'retweeted_status' in tweet and tweet['retweeted_status']:
         return True
     elif re.search(rt_manual_pattern, tweet['text'].encode('utf-8')):
         return True
